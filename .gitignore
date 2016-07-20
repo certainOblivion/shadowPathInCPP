@@ -45,3 +45,12 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+gameOfPaths/build/gameOfPaths.sdf
+gameOfPaths/source/GameOfPaths/obj/Win32/Release/gameOfPaths.tlog/unsuccessfulbuild
+gameOfPaths/source/GameOfPaths/obj/Win32/Release/gameOfPaths.tlog/link.write.1.tlog
+*.tlog
+gameOfPaths/build/ipch/gameofpaths-53018f41/gameofpaths-4524fc13.ipch
+*.ipch
+gameOfPaths/source/GameOfPaths/bin/Win32/Release/gameOfPaths.iobj
+*.ipdb
+gameOfPaths/source/GameOfPaths/obj/Win32/Debug/vc140.idb
