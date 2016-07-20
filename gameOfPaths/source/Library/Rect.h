@@ -1,4 +1,5 @@
 #pragma once
+#include "Grid.h"
 class Rect
 {
 public:

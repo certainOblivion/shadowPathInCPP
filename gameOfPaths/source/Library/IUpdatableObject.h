@@ -2,7 +2,7 @@
 #include <memory>
 #include <list>
 #include "Grid.h"
-class IUpdatableObject
+namespace IObject
 {
-	virtual void Update(float dT) = 0;
-};
+
+}

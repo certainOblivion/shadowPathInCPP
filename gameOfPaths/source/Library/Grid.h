@@ -15,8 +15,10 @@ public:
 	Vector2D& operator=(const Vector2D& other);
 	Vector2D operator+(const Vector2D& rhs) const;
 	Vector2D operator-(const Vector2D& rhs) const;
-	Vector2D operator*(const int rhs) const;
-	Vector2D operator/(const int rhs) const;
+	Vector2D operator*(const double rhs) const;
+	Vector2D operator/(const double rhs) const;
+	double SqrMagnitude() const;
+	double Magnitude() const;
 	double x;
 	double y;
 private:
@@ -159,7 +161,7 @@ namespace Grid
 		static Vector2D HexToPixel(const Layout& layout,const Hex &h);
 		static FractionalHex PixelToHex(const Layout& layout, const Vector2D &p);
 		static Vector2D HexCornerOffset(const Layout &layout, int corner);
-		static std::shared_ptr<std::list<Vector2D>> PolygonCorners(const Layout& layout,const Hex &h);
+		static void PolygonCorners(const Layout& layout,const Hex &h, std::shared_ptr<std::list<Vector2D>>& corners);
 		static bool IsOrientationPointyTop(const Layout& layout);
 		static bool IsOrientationFlatTop(const Layout& layout);
 		static const Orientation POINTY_TOP;
@@ -181,7 +183,7 @@ namespace Grid
 		GridMesh(double mapWidth, double mapHeight, float hexScaleDownFactor = 1.f, float worldToGridRatio = 1.f);
 		GridMesh(const GridMesh& other);
 
-		static std::shared_ptr<std::unordered_set<Hex>> CreateMap(double mapWidth, double mapHeight);
+		static void CreateMap(double mapWidth, double mapHeight, std::unordered_set<Hex>& createdHex);
 		static bool Equals(const GridMesh& a, const GridMesh& b);
 		bool operator==(const GridMesh& other)const;
 		bool operator!=(const GridMesh& other)const { return !(operator==(other)); }

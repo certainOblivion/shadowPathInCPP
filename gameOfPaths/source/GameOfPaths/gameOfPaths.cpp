@@ -5,21 +5,16 @@
 #include <SFML/Window.hpp>
 #include <SFML/OpenGL.hpp>
 #include <SFML/Graphics.hpp>
-#include "../Library/PathObstacle.h"
+#include "PathObstacle.h"
 #include <list>
 #include <functional>
 #include "Game.h"
 
-
-void DrawObstacle(Vector2D position, Vector2D location, float rotation)
-{
- 	sf::CircleShape shape(50);
- 	shape.setPosition((float)position.x, (float)position.y);
- 	// set the shape color to green
- 	shape.setFillColor(sf::Color::Green);
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
 
 
-}
 ////////////////////////////////////////////////////////////
 /// Entry point of application
 ///
@@ -29,15 +24,21 @@ void DrawObstacle(Vector2D position, Vector2D location, float rotation)
 
 int main()
 {
+#if defined(DEBUG) || defined(_DEBUG)
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	//_crtBreakAlloc = 647;
+#endif
 	// create the window	
-	sf::RenderWindow window(sf::VideoMode(800, 600), "Game of Paths");
+	const int windowWidth = 1900;
+	const int windowHeight = 1200;
+	sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Game of Paths");
 	auto getWindow = [&]()
 	{
 		return &window;
 	};
-	sf::Clock clock;
 
-	Game game(getWindow);
+	sf::Clock clock;
+	Game game(getWindow, windowWidth,windowHeight);
 	// run the program as long as the window is open
 	while (window.isOpen())
 	{

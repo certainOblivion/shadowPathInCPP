@@ -30,15 +30,25 @@ Vector2D Vector2D::operator-(const Vector2D& rhs) const
 	return Vector2D(x - rhs.x, y - rhs.y);
 }
 
-Vector2D Vector2D::operator*(const int rhs) const
+Vector2D Vector2D::operator*(const double rhs) const
 {
 	return Vector2D(x * rhs, y * rhs);
 }
 
-Vector2D Vector2D::operator/(const int rhs) const
+Vector2D Vector2D::operator/(const double rhs) const
 {
 	Vector2D result(x / rhs, y / rhs);
 	return result;
+}
+
+double Vector2D::SqrMagnitude() const
+{
+	return (x*x) + (y*y);
+}
+
+double Vector2D::Magnitude() const
+{
+	return sqrt(SqrMagnitude());
 }
 
 Vector2D& Vector2D::operator=(const Vector2D& other)
@@ -379,16 +389,14 @@ Vector2D Layout::HexCornerOffset(const Layout &layout, int corner)
 	return Vector2D(size.x * cos(angle), size.y * sin(angle));
 }
 
-std::shared_ptr<std::list<Vector2D>> Layout::PolygonCorners(const Layout& layout, const Hex &h)
+void Layout::PolygonCorners(const Layout& layout, const Hex &h, std::shared_ptr<std::list<Vector2D>>& corners)
 {
-	std::shared_ptr<std::list<Vector2D>> corners = std::make_shared<std::list<Vector2D>>();
 	Vector2D center = Layout::HexToPixel(layout, h);
 	for (int i = 0; i < 6; i++)
 	{
 		Vector2D offset = Layout::HexCornerOffset(layout, i);
 		corners->emplace_back(Vector2D(center.x + offset.x, center.y + offset.y));
 	}
-	return corners;
 }
 
 bool Layout::IsOrientationPointyTop(const Layout& layout)
@@ -411,18 +419,16 @@ GridMesh::GridMesh(double mapWidth, double mapHeight, float hexScaleDownFactor /
 {
 }
 
-std::shared_ptr<std::unordered_set<Hex>> CreateMap(double mapWidth, double mapHeight)
+void GridMesh::CreateMap(double mapWidth, double mapHeight, std::unordered_set<Hex>& map)
 {
-	std::shared_ptr<std::unordered_set<Hex>> map = std::make_shared<std::unordered_set<Hex>>();
 	for (int r = 0; r < mapHeight; r++)
 	{
 		int r_offset = r >> 1;
 		for (int q = -r_offset; q < mapWidth - r_offset; q++)
 		{
-			map->emplace(Hex(q, r, -q - r));
+			map.emplace(Hex(q, r, -q - r));
 		}
 	}
-	return map;
 }
 
 bool GridMesh::Equals(const GridMesh& a, const GridMesh& b)

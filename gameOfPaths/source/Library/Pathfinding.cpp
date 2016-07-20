@@ -1,10 +1,9 @@
-#include "pch.h"
 #include "Pathfinding.h"
-#include "GridHelper.h"
 #if !RELEASE
 #include <chrono>
 #endif
 #include <queue>
+#include "GridHelper.h"
 
 using namespace PathSystem;
 using namespace Grid;
@@ -15,24 +14,12 @@ Pathfinding::~Pathfinding()
 {
 }
 
-PathSystem::Pathfinding::Pathfinding(int mapWidth, int mapHeight, float hexDiminishFactor, float worldToGridRatio, std::list<PathObstacle>& obstacles, std::list<PathActor>& actors)
+PathSystem::Pathfinding::Pathfinding(int mapWidth, int mapHeight, float hexDiminishFactor, float worldToGridRatio)
 	: GridWidth ( mapWidth), GridHeight (mapHeight), mGridMesh(GridMesh(mapWidth, mapHeight,hexDiminishFactor, worldToGridRatio))
 {
-	if (obstacles.size() > 0)
-	{
-		for (const PathObstacle& obstacle : obstacles)
-		{
-			AddObstacle(obstacle.Position(), obstacle.Dimensions());
-		}
-	}
-
-	if (actors.size() > 0)
-	{
-		for (PathActor obstacle : actors)
-		{
-
-		}
-	}
+#if !RELEASE
+	//Grid::GridMesh::CreateMap(mapWidth, mapHeight, mAllHex);
+#endif
 }
 
 void PathSystem::Pathfinding::AddObstacle(const Vector2D& center, const Vector2D& dimensions)
@@ -106,6 +93,23 @@ Vector2D PathSystem::Pathfinding::HexToPixel(const Grid::Hex& hex) const
 	return Layout::HexToPixel(mGridMesh.GetLayout(), hex);
 }
 
+#if !RELEASE
+const Grid::Layout& PathSystem::Pathfinding::GetLayout() const
+{
+	return mGridMesh.GetLayout();
+}
+
+void PathSystem::Pathfinding::GetBlockedHex(std::unordered_set<Grid::Hex>& hexSet) const
+{
+	hexSet = mBlockedHex;
+}
+
+void PathSystem::Pathfinding::GetAllHex(std::unordered_set<Grid::Hex>& hexSet) const
+{
+	hexSet = mAllHex;
+}
+
+#endif
 
  #if RELEASE
 void PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path)
