@@ -54,3 +54,4 @@ gameOfPaths/build/ipch/gameofpaths-53018f41/gameofpaths-4524fc13.ipch
 gameOfPaths/source/GameOfPaths/bin/Win32/Release/gameOfPaths.iobj
 *.ipdb
 gameOfPaths/source/GameOfPaths/obj/Win32/Debug/vc140.idb
+gameOfPaths/build/gameOfPaths.VC.opendb
