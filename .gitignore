@@ -46,6 +46,8 @@ Network Trash Folder
 Temporary Items
 .apdisk
 gameOfPaths/build/gameOfPaths.sdf
+gameOfPaths/source/GameOfPaths/obj/*.*
+gameOfPaths/source/GameOfPaths/bin/*.*
 gameOfPaths/source/GameOfPaths/obj/Win32/Release/gameOfPaths.tlog/unsuccessfulbuild
 gameOfPaths/source/GameOfPaths/obj/Win32/Release/gameOfPaths.tlog/link.write.1.tlog
 *.tlog
@@ -55,3 +57,6 @@ gameOfPaths/source/GameOfPaths/bin/Win32/Release/gameOfPaths.iobj
 *.ipdb
 gameOfPaths/source/GameOfPaths/obj/Win32/Debug/vc140.idb
 gameOfPaths/build/gameOfPaths.VC.opendb
+*.idb
+gameOfPaths/source/GameOfPaths/bin/Win32/Release/resources/Now-Light.otf
+gameOfPaths/source/GameOfPaths/bin/Win32/Debug/resources/Now-Light.otf

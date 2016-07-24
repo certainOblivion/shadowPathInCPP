@@ -5,6 +5,7 @@
 #include "SFML\Graphics\Color.hpp"
 #include "Helper.h"
 #include "SFML\Graphics.hpp"
+#include "assetloader.h"
 #include <iostream>
 
 using namespace std;
@@ -101,8 +102,9 @@ void Game::AddObstacle(Vector2D position, Vector2D dimension, float rotation)
 
 void Game::Update(float dT)
 {
-    float fps = 1 / dT;
-    cout << fps << "\n";
+    //fps string will change every frame
+    mFPSCounter = 1 / dT;
+
     //handle input
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
     {
@@ -161,26 +163,21 @@ void Game::Update(float dT)
 
 void Game::Draw() const
 {
-    for (int i = 1; i < mVisibilityPoints.size(); i++)
+    for (size_t i = 1; i < mVisibilityPoints.size(); i++)
     {
         //populate the 4 sides of the trapezoid clockwise
         const Vector2D& p1 = mVisibilityPoints[i - 1];
         const Vector2D& p2 = mVisibilityPoints[i];
 
         const Vector2D& origin = mVisibility.Origin();
-        //calculate p3 (projected from p2) and p4 (projection from p1)
-        
-        Vector2D p3 = p2 + ((p2 - origin) / (p2 - origin).Magnitude() * 1000000.f);
-        Vector2D p4 = p1 + ((p1 - origin) / (p1 - origin).Magnitude() * 1000000.f);
 
         sf::ConvexShape shadowShape;
-        shadowShape.setPointCount(4);
+        shadowShape.setPointCount(3);
         shadowShape.setPoint(0, WorldToScreenPoint(p1));
         shadowShape.setPoint(1, WorldToScreenPoint(p2));
-        shadowShape.setPoint(2, WorldToScreenPoint(p3));
-        shadowShape.setPoint(3, WorldToScreenPoint(p4));
+        shadowShape.setPoint(2, WorldToScreenPoint(origin));
 
-        shadowShape.setFillColor(Color(100,100,100));
+        shadowShape.setFillColor(Color(136,136,136));
 
         mWindow->draw(shadowShape);
     }
@@ -196,17 +193,17 @@ void Game::Draw() const
 
     for (const Grid::Hex& hex : hexSet)
     {
-        DrawHex(hex, sf::Color::Blue);
+        DrawHex(hex, sf::Color::Red);
     }
 
     for (const Grid::Hex& hex : mTestedHex)
     {
-        DrawHex(hex, sf::Color::Black);
+        DrawHex(hex, sf::Color::Blue);
     }
 
     for (const Grid::Hex& hex : mHexInPath)
     {
-        DrawHex(hex, sf::Color::White);
+        DrawHex(hex, sf::Color::Cyan);
     }
 
     for (const Vector2D& pos : *mPath)
@@ -216,12 +213,33 @@ void Game::Draw() const
 
 #endif
 
-    for (const Vector2D& point : mVisibilityPoints )
-    {
-        Vertex v = WorldToScreenPoint(point);
-        v.color = Color::Cyan;
-        mWindow->draw(&v, 1, sf::Points);
-    }
+//     for (const Vector2D& point : mVisibilityPoints )
+//     {
+//         Vertex v = WorldToScreenPoint(point);
+//         v.color = Color::Cyan;
+//         mWindow->draw(&v, 1, sf::Points);
+//     }
+
+    DrawHUD();
+}
+
+void Game::DrawHUD() const
+{
+    //draw fps text
+    Text fpsText;
+    Font fpsFont;
+    unsigned int fontSize = 0;
+    const char* fontData = AssetLoader::GetAsset("resources\\Now-Light.otf", fontSize);
+    fpsFont.loadFromMemory(fontData, fontSize);
+    fpsText.setPosition(static_cast<float>(Helper::ScreenDimensions.x) * .95f, static_cast<float>(Helper::ScreenDimensions.y) * .01f);
+    fpsText.setFont(fpsFont);
+    char fpsString[8]; // 4 digits before decimal + 1 decimal character + 2 digits after decimal + 1 null
+    sprintf_s(fpsString, "%.2f", mFPSCounter);
+    fpsText.setString(fpsString);
+
+    Color fpsColor = mFPSCounter > 40 ? Color::Green : (mFPSCounter > 20 ? Color::Yellow : Color::Red);
+    fpsText.setColor(fpsColor);
+    mWindow->draw(fpsText);
 }
 
 #if !RELEASE

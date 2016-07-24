@@ -13,6 +13,7 @@ public:
     ~Game();
     void Draw() const;
 
+    void DrawHUD() const;
     void DrawObstacle(Vector2D position, Vector2D location, float rotation);
     void DrawPlayer(Vector2D position, Vector2D dimension, float rotation);
     void DrawEnemy(Vector2D position, Vector2D dimension, float rotation);
@@ -31,6 +32,7 @@ private:
     std::list<std::shared_ptr<Object::IRenderableObject>> mRenderables;
     std::list<std::shared_ptr<Object::IUpdatableObject>> mUpdatables;
     std::vector<Vector2D> mVisibilityPoints;
+    float mFPSCounter;
 #if !RELEASE
     std::list<Grid::Hex> mHexInPath;
     std::unordered_set<Grid::Hex> mTestedHex;

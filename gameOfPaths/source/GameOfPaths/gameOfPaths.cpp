@@ -8,14 +8,12 @@
 #include "PathObstacle.h"
 #include <list>
 #include <functional>
-
-#define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
 #include "Helper.h"
 #include "Game.h"
 
-
+#define _CRTDBG_MAP_ALLOC
 ////////////////////////////////////////////////////////////
 /// Entry point of application
 ///
@@ -29,9 +27,12 @@ int main()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//_crtBreakAlloc = 647;
 #endif
+    //set the working directory to the directory where the executable exists, so that the relative paths work
+    SetCurrentDirectory(Helper::ExecutableDirectory().c_str());
+
 	// create the window	
 	sf::RenderWindow window(sf::VideoMode(static_cast<unsigned int>(Helper::ScreenDimensions.x), static_cast<unsigned int>(Helper::ScreenDimensions.y)), "Game of Paths");
-	//window.setFramerateLimit(60);
+	window.setFramerateLimit(60);
 	auto getWindow = [&]()
 	{
 		return &window;
@@ -51,7 +52,7 @@ int main()
 				window.close();
 		}
 		// clear the window with black color
-		window.clear(sf::Color(136, 136,136));
+		window.clear(sf::Color(100, 100,100));
 
 		float deltaTime = clock.restart().asSeconds();
 
@@ -65,4 +66,3 @@ int main()
 
 	return 0;
 }
-

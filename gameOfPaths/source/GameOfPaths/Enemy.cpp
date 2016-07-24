@@ -19,7 +19,7 @@ void Enemy::Update(float dT)
 			}
 		}
 
-		Vector2D& newPosition = Helper::MathHelper::MoveTowards(Position(), mPath->front(), 700*dT);
+		Vector2D& newPosition = Helper::MathHelper::MoveTowards(Position(), mPath->front(), 400*dT);
 		SetPosition(newPosition);
 	}
 }
