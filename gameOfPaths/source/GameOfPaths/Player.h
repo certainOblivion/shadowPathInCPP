@@ -25,7 +25,7 @@ namespace std
 			using std::hash;
 
 			return (hash<Vector2D>()(h.Position())
-				^ (hash<float>()(h.Rotation()) << 1))
+				^ (hash<float>()(h.RotationInDegrees()) << 1))
 				^ (hash<Vector2D>()(h.Dimensions()) << 2);
 		}
 	};

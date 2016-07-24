@@ -1,7 +1,8 @@
 #include <math.h>
 #include "Grid.h"
 #include <algorithm>
-#include "Math.h"
+#include <list>
+#include "MathHelper.h"
 
 using namespace Grid;
 
@@ -14,6 +15,12 @@ Vector2D::Vector2D(double _x, double _y) :
 Vector2D::Vector2D(const Vector2D& other) :
 	x(other.x), y(other.y)
 {}
+
+Vector2D::Vector2D() :
+	x(0), y(0)
+{
+
+}
 
 bool Vector2D::Equals(const Vector2D& a, const Vector2D& b)
 {
@@ -79,6 +86,10 @@ Hex::Hex(const Hex& other) :
 	q(other.q), r(other.r), s(other.s)
 {}
 
+Grid::Hex::Hex(): q(0), r(0), s(0)
+{
+}
+
 Hex Hex::Add(const Hex& a, const Hex& b)
 {
 	return Hex(a.q + b.q, a.r + b.r, a.s + b.s);
@@ -102,6 +113,15 @@ Hex Hex::Direction(int direction)
 Hex Hex::Neighbour(const Hex& hex, int direction)
 {
 	return Add(hex, Direction(direction));
+}
+
+void Hex::GetNeighbours(const Hex& hex, std::list<Hex>& neighbours)
+{
+	neighbours.clear();
+	for (int i = 0; i < 6;i++)
+	{
+		neighbours.push_back(Hex::Neighbour(hex, i));
+	}
 }
 
 Hex Hex::DiagonalNeighbour(const Hex& hex, int direction)
@@ -324,9 +344,9 @@ Orientation::Orientation(const Orientation& other) :
 #pragma endregion
 
 #pragma region Layout
-const Orientation Layout::POINTY_TOP = Orientation(sqrt(3.0), sqrt(3.0) / 2.0, 0.0, 3.0 / 2.0, sqrt(3.0) / 3.0, -1.0 / 3.0, 0.0, 2.0 / 3.0, 0.5);
+const Orientation Layout::POINTY_TOP = Orientation(Helper::MathHelper::Sqrt3, Helper::MathHelper::Sqrt3 / 2.0, 0.0, 3.0 / 2.0, Helper::MathHelper::Sqrt3 / 3.0, -1.0 / 3.0, 0.0, 2.0 / 3.0, 0.5);
 
-const Orientation Layout::FLAT_TOP = Orientation(3.0 / 2.0, 0.0, sqrt(3.0) / 2.0, sqrt(3.0), 2.0 / 3.0, 0.0, -1.0 / 3.0, sqrt(3.0) / 3.0, 0.0);
+const Orientation Layout::FLAT_TOP = Orientation(3.0 / 2.0, 0.0, Helper::MathHelper::Sqrt3 / 2.0, Helper::MathHelper::Sqrt3, 2.0 / 3.0, 0.0, -1.0 / 3.0, Helper::MathHelper::Sqrt3 / 3.0, 0.0);
 
 Layout::Layout(const Layout& other) :
 	mOrientation(other.mOrientation), mOrigin(other.mOrigin), mSize(other.mSize)
@@ -385,7 +405,7 @@ Vector2D Layout::HexCornerOffset(const Layout &layout, int corner)
 {
 	const Orientation& M = layout.mOrientation;
 	const Vector2D& size = layout.mSize;
-	double angle = 2.0 * Math::PI * (corner + M.start_angle) / 6;
+	double angle = 2.0 * Helper::MathHelper::Pi * (corner + M.start_angle) / 6;
 	return Vector2D(size.x * cos(angle), size.y * sin(angle));
 }
 
@@ -413,9 +433,9 @@ bool Layout::IsOrientationFlatTop(const Layout& layout)
 
 #pragma region GridMesh
 
-GridMesh::GridMesh(double mapWidth, double mapHeight, float hexScaleDownFactor /*= 1.f*/, float worldToGridRatio /*= 1.f*/) :
-	mWorldToGridRatio(worldToGridRatio), mPointWidth(worldToGridRatio / hexScaleDownFactor),
-	mLayout(Layout(Layout::POINTY_TOP, Vector2D(mPointWidth, mPointWidth), Vector2D(-mapWidth / (hexScaleDownFactor), -mapHeight / (hexScaleDownFactor))))
+GridMesh::GridMesh(double mapWidth, double mapHeight, float hexSize/*= 1.f*/) :
+	mPointWidth(hexSize/*/worldToGridRatio*/),
+	mLayout(Layout(Layout::POINTY_TOP, Vector2D(mPointWidth, mPointWidth), Vector2D(-mapWidth / (2 * hexSize), -mapHeight / (2 * hexSize))))
 {
 }
 
@@ -446,7 +466,6 @@ GridMesh& GridMesh::operator=(const GridMesh& other)
 	if (*this != other)
 	{
 		mPointWidth = other.mPointWidth;
-		mWorldToGridRatio = other.mWorldToGridRatio;
 		mLayout = other.mLayout;
 	}
 	return *this;
@@ -454,11 +473,11 @@ GridMesh& GridMesh::operator=(const GridMesh& other)
 
 bool GridMesh::operator==(const GridMesh& other) const
 {
-	return (mPointWidth == other.mPointWidth) && (mLayout == other.mLayout) && (mWorldToGridRatio == other.mWorldToGridRatio);
+	return (mPointWidth == other.mPointWidth) && (mLayout == other.mLayout) ;
 }
 
 GridMesh::GridMesh(const GridMesh& other) :
-	mPointWidth(other.mPointWidth), mLayout(other.mLayout), mWorldToGridRatio(other.mWorldToGridRatio)
+	mPointWidth(other.mPointWidth), mLayout(other.mLayout)
 {
 }
 

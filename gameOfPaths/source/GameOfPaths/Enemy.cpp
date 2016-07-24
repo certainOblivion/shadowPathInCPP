@@ -8,7 +8,7 @@ Enemy::~Enemy()
 
 void Enemy::Update(float dT)
 {
-	if (mPath->size() > 0)
+	if (mPath.get() != nullptr && mPath->size() > 0)
 	{
 		if (Position() == mPath->front())
 		{
@@ -19,12 +19,13 @@ void Enemy::Update(float dT)
 			}
 		}
 
-		Vector2D& newPosition = Helper::MoveTowards(Position(), mPath->front(), 3);
+		Vector2D& newPosition = Helper::MathHelper::MoveTowards(Position(), mPath->front(), 700*dT);
 		SetPosition(newPosition);
 	}
 }
 
-Enemy::Enemy(const Vector2D& position, float rotation, const Vector2D& dimensions, std::function<void(Vector2D, Vector2D, float)>* drawFunc) : IRenderableObject(position, rotation, dimensions, drawFunc) 
+Enemy::Enemy(const Vector2D& position, float rotation, const Vector2D& dimensions, std::function<void(Vector2D, Vector2D, float)>* drawFunc) 
+	: IRenderableObject(position, rotation, dimensions, drawFunc) 
 {}
 
 void Enemy::SetPath(std::shared_ptr<std::list<Vector2D>> newPath)

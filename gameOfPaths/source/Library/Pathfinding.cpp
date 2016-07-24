@@ -14,19 +14,16 @@ Pathfinding::~Pathfinding()
 {
 }
 
-PathSystem::Pathfinding::Pathfinding(int mapWidth, int mapHeight, float hexDiminishFactor, float worldToGridRatio)
-	: GridWidth ( mapWidth), GridHeight (mapHeight), mGridMesh(GridMesh(mapWidth, mapHeight,hexDiminishFactor, worldToGridRatio))
+PathSystem::Pathfinding::Pathfinding(int mapWidth, int mapHeight, float hexSize)
+	: GridWidth ( mapWidth), GridHeight (mapHeight), mGridMesh(GridMesh(mapWidth, mapHeight,hexSize))
 {
-#if !RELEASE
-	//Grid::GridMesh::CreateMap(mapWidth, mapHeight, mAllHex);
-#endif
 }
 
-void PathSystem::Pathfinding::AddObstacle(const Vector2D& center, const Vector2D& dimensions)
+void PathSystem::Pathfinding::AddObstacle(const Vector2D& center, const Vector2D& dimensions, float rotation)
 {
-	std::shared_ptr<std::unordered_set<Hex>> hexList = std::make_shared<std::unordered_set<Hex>>();
-	GridHelper::RectangleToHexList(center, dimensions, mGridMesh, hexList);
-	for (const Hex& h : *hexList)
+	std::list<Hex> hexList;
+	GridHelper::RectangleToHexList(center, dimensions, rotation, mGridMesh, hexList);
+	for (const Hex& h : hexList)
 	{
 		mBlockedHex.emplace(h);
 	}
@@ -35,7 +32,10 @@ void PathSystem::Pathfinding::AddObstacle(const Vector2D& center, const Vector2D
 
 int PathSystem::Pathfinding::CalculateHeuristic(Hex a, Hex b)
 {
-	return 0;
+	Vector2D pixelA = Layout::HexToPixel(mGridMesh.GetLayout(), a);
+	Vector2D pixelB = Layout::HexToPixel(mGridMesh.GetLayout(), b);
+
+	return /*static_cast<int>((pixelA - pixelB).SqrMagnitude() * 10) +*/ Hex::Distance(a, b) /** 100*/;
 }
 
 
@@ -46,20 +46,19 @@ void PathSystem::Pathfinding::SmoothPath(std::list<Vector2D> &path)
 		return;
 	}
 	auto& source = path.begin();
-	auto& nodeToDelete = ++source;
+	auto& nodeToDelete = std::next(source, 1);
 
-	while ((++nodeToDelete) != path.end())
+	while (std::next(nodeToDelete, 1) != path.end())
 	{
-		if (IsVisible(*source, *(++nodeToDelete)))
+		if (IsVisible(*source, *std::next(nodeToDelete, 1)))
 		{
-			auto& temp = nodeToDelete;
-			nodeToDelete = ++nodeToDelete;
-			path.remove(*temp);
+			path.erase(nodeToDelete);//nodeToDelete is invalid now
+			nodeToDelete = std::next(source, 1);
 		}
 		else
 		{
 			source = nodeToDelete;
-			nodeToDelete = ++source;
+			nodeToDelete = std::next(source, 1);
 		}
 	}
 }
@@ -115,7 +114,7 @@ void PathSystem::Pathfinding::GetAllHex(std::unordered_set<Grid::Hex>& hexSet) c
 void PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path)
  {
 #else
- void PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path, std::list<Grid::Hex>& hexInPath, std::list<Grid::Hex>& testedHex, long& timeToFindPath)
+ void PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path, std::list<Grid::Hex>& hexInPath, std::unordered_set<Grid::Hex>& testedHex, long& timeToFindPath)
  {
 	 const auto startTime = std::chrono::high_resolution_clock::now();;
 	 timeToFindPath = 0;
@@ -131,12 +130,12 @@ void PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &des
 	 bool pathFound = false;
 	 if (!mBlockedHex.count(destinationHex) && !mBlockedHex.count(startHex))
 	 {
-		 std::priority_queue<HexPriorityNode, std::vector<HexPriorityNode>, CompareHexNode> frontier;
+		 std::priority_queue<HexPriorityNode, std::vector<HexPriorityNode>> frontier;
 		 HexPriorityNode startNode(startHex, 0.f);
 		 frontier.emplace(startNode);
 		 std::unordered_map<Hex, int> cost_so_far;
 
-		 came_from.emplace(startHex,startHex); // to use the [] operator in map, the type needs to have a parameterless constructor, working around it
+		 came_from[startHex] = startHex;
 		 cost_so_far[startHex] = 0;
 
 		 while (frontier.size() > 0)
@@ -144,22 +143,22 @@ void PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &des
 			 HexPriorityNode current = frontier.top();
 			 frontier.pop();
 #if !RELEASE
-			 testedHex.emplace_back(current.mHex);
+			 testedHex.emplace(current.mHex);
 #endif
 			 if (current.mHex == destinationHex)
 			 {
 #if !RELEASE
 				 auto finishTime = std::chrono::high_resolution_clock::now();
-				 timeToFindPath = static_cast<long>(std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startTime).count());
+				 timeToFindPath = static_cast<long>(std::chrono::duration_cast<std::chrono::milliseconds>(finishTime - startTime).count());
 #endif
 				 pathFound = true;
 				 break;
 			 }
 
-			 for (int i = 0; i < HEX_NUM_SIDES; i++)
+			 std::list<Hex> neighbours;
+			 Hex::GetNeighbours(current.mHex, neighbours);
+			 for (Hex& next : neighbours)
 			 {
-				 Hex next = Hex::Neighbour(current.mHex, i);
-
 				 if (mBlockedHex.count(next))
 				 {
 					 continue;
@@ -167,13 +166,13 @@ void PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &des
 
 				 int new_cost = cost_so_far[current.mHex] + UNBLOCKED_HEX_COST;
 
-				 if ((cost_so_far.find(next) == cost_so_far.end()) || new_cost < cost_so_far[next])
+				 if ((cost_so_far.count(next) == 0) || (new_cost < cost_so_far[next]))
 				 {
 					 cost_so_far[next] = new_cost;
 					 int priority = new_cost + CalculateHeuristic(destinationHex, next);
 					 HexPriorityNode nextNode(next,static_cast<float>( priority));
-					 frontier.emplace(nextNode);
-					 came_from.emplace(next, current.mHex);
+					 frontier.push(nextNode);
+					 came_from[next] = current.mHex;
 				 }
 			 }
 		 }
@@ -186,17 +185,19 @@ void PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &des
 #endif
 		 Hex currentHex = destinationHex;
 
-		 while (came_from.find(currentHex)->second != destinationHex)
+		 while (came_from[currentHex] != startHex)
 		 {
 #if !RELEASE
 			 hexInPath.emplace_back(currentHex);
 #endif
 
 			 path.emplace_front(HexToPixel(currentHex));
-			 currentHex = came_from.find(currentHex)->second;
+			 currentHex = came_from[currentHex];
+
 		 }
 
 		 path.emplace_front(start);
+		 path.emplace_back(destination);
 		 SmoothPath(path);
 	 }
 

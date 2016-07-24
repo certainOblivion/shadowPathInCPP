@@ -7,6 +7,7 @@
 class Vector2D
 {
 public:
+	Vector2D();
 	Vector2D(double _x, double _y);
 	Vector2D(const Vector2D& other);
 	static bool Equals(const Vector2D& a, const Vector2D& b);
@@ -20,9 +21,7 @@ public:
 	double SqrMagnitude() const;
 	double Magnitude() const;
 	double x;
-	double y;
-private:
-	Vector2D() = delete;
+	double y;	
 };
 #pragma endregion
 
@@ -44,6 +43,7 @@ namespace Grid
 		static Hex Scale(const Hex& a, int k);
 		static Hex Direction(int direction);
 		static Hex Neighbour(const Hex& hex, int direction);
+		static void GetNeighbours(const Hex& hex, std::list<Hex>& neighbours);
 		static Hex DiagonalNeighbour(const Hex& hex, int direction);
 		static int Length(const Hex& hex);
 		static int Distance(const Hex& a, const  Hex& b);
@@ -53,13 +53,15 @@ namespace Grid
 		Hex& operator=(const Hex& other);
 		static const Hex DIRECTIONS[];
 		static const Hex DIAGONALS[];
-		Hex() = delete;
+		Hex();
 	private:
 		int q;
 		int r;
 		int s;
 	};
 #pragma endregion
+
+
 
 #pragma region FractionalHex	
 	class FractionalHex
@@ -180,7 +182,7 @@ namespace Grid
 	class GridMesh
 	{
 	public:
-		GridMesh(double mapWidth, double mapHeight, float hexScaleDownFactor = 1.f, float worldToGridRatio = 1.f);
+		GridMesh(double mapWidth, double mapHeight, float hexSize = 1.f);
 		GridMesh(const GridMesh& other);
 
 		static void CreateMap(double mapWidth, double mapHeight, std::unordered_set<Hex>& createdHex);
@@ -191,7 +193,6 @@ namespace Grid
 		const Layout& GetLayout() const;
 	private:
 		float mPointWidth;
-		float mWorldToGridRatio;
 		Layout mLayout;
 	};
 #pragma endregion

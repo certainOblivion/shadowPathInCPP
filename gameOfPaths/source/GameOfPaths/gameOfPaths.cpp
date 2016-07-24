@@ -8,11 +8,12 @@
 #include "PathObstacle.h"
 #include <list>
 #include <functional>
-#include "Game.h"
 
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
+#include "Helper.h"
+#include "Game.h"
 
 
 ////////////////////////////////////////////////////////////
@@ -29,16 +30,15 @@ int main()
 	//_crtBreakAlloc = 647;
 #endif
 	// create the window	
-	const int windowWidth = 1900;
-	const int windowHeight = 1200;
-	sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Game of Paths");
+	sf::RenderWindow window(sf::VideoMode(static_cast<unsigned int>(Helper::ScreenDimensions.x), static_cast<unsigned int>(Helper::ScreenDimensions.y)), "Game of Paths");
+	//window.setFramerateLimit(60);
 	auto getWindow = [&]()
 	{
 		return &window;
 	};
 
 	sf::Clock clock;
-	Game game(getWindow, windowWidth,windowHeight);
+	Game game(getWindow, static_cast<unsigned int>(Helper::ScreenDimensions.x), static_cast<unsigned int>(Helper::ScreenDimensions.y));
 	// run the program as long as the window is open
 	while (window.isOpen())
 	{
@@ -56,6 +56,8 @@ int main()
 		float deltaTime = clock.restart().asSeconds();
 
 		game.Update(deltaTime);
+
+        game.Draw();
 
 		// end the current frame
 		window.display();
