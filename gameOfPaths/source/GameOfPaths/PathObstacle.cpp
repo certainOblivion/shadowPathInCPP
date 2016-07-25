@@ -2,8 +2,3 @@
 #include "PathObstacle.h"
 
 
-
-PathObstacle::~PathObstacle()
-{
-}
-

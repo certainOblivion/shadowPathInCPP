@@ -2,10 +2,6 @@
 #include "Enemy.h"
 #include "Library\MathHelper.h"
 
-Enemy::~Enemy()
-{
-}
-
 void Enemy::Update(float dT)
 {
 	if (mPath.get() != nullptr && mPath->size() > 0)
@@ -25,7 +21,7 @@ void Enemy::Update(float dT)
 }
 
 Enemy::Enemy(const Vector2D& position, float rotation, const Vector2D& dimensions, std::function<void(Vector2D, Vector2D, float)>* drawFunc) 
-	: IRenderableObject(position, rotation, dimensions, drawFunc) 
+	: IRenderableObject(position, rotation, dimensions, true, drawFunc) 
 {}
 
 void Enemy::SetPath(std::shared_ptr<std::list<Vector2D>> newPath)

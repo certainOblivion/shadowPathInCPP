@@ -5,19 +5,21 @@
 #include "pathobstacle.h"
 #include "Enemy.h"
 #include "Library\VisibilityComputer.h"
+#include "SFML\System.hpp"
 class Game : public Object::IUpdatableObject
 {
 public:
     Game(std::function<void*()> getWindow, int mapWidth, int mapHeight);
     void Init();
-    ~Game();
-    void Draw() const;
+    virtual ~Game() = default;
+    void Draw();
 
     void DrawHUD() const;
     void DrawObstacle(Vector2D position, Vector2D location, float rotation);
     void DrawPlayer(Vector2D position, Vector2D dimension, float rotation);
     void DrawEnemy(Vector2D position, Vector2D dimension, float rotation);
-    void AddObstacle(Vector2D position, Vector2D location, float rotation);
+    void AddObstacle(Vector2D position, Vector2D location, float rotation, bool isVisible = true);
+    void AddPlayer(Vector2D position, Vector2D dimension, float rotation, bool isVisible = true);
     void Update(float dT) override;
 #if !RELEASE
     void DrawHex(const Grid::Hex& hex, const sf::Color& color, bool filled = false) const;
@@ -33,6 +35,7 @@ private:
     std::list<std::shared_ptr<Object::IUpdatableObject>> mUpdatables;
     std::vector<Vector2D> mVisibilityPoints;
     float mFPSCounter;
+    sf::Mutex mMutex;
 #if !RELEASE
     std::list<Grid::Hex> mHexInPath;
     std::unordered_set<Grid::Hex> mTestedHex;

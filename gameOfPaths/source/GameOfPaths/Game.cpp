@@ -1,22 +1,24 @@
 #include "pch.h"
 #include "Game.h"
-#include "SFML\Graphics.hpp"
 #include "Enemy.h"
-#include "SFML\Graphics\Color.hpp"
 #include "Helper.h"
 #include "SFML\Graphics.hpp"
 #include "assetloader.h"
 #include <iostream>
+#include "Library\XmlParseMaster.h"
+#include "LevelXmlParseHelper.h"
+#include "LevelSharedData.h"
 
 using namespace std;
 using namespace Helper;
 using namespace sf;
 using namespace Grid;
+using namespace Library;
 
-Game::Game(std::function<void*()> getWindow, int mapWidth, int mapHeight) 
+Game::Game(std::function<void*()> getWindow, int mapWidth, int mapHeight)
     :mPathfinder(mapWidth, mapHeight, 20.f), mWindow(nullptr), mPlayer(nullptr), mVisibility(Vector2D(), 5000.f)
 #if !RELEASE
-, mPath(std::make_shared<std::list<Vector2D>>())
+    , mPath(std::make_shared<std::list<Vector2D>>())
 #endif
 {
     mWindow = reinterpret_cast<sf::RenderWindow*>(getWindow());
@@ -25,28 +27,26 @@ Game::Game(std::function<void*()> getWindow, int mapWidth, int mapHeight)
 
 void Game::Init()
 {
-    AddObstacle(Vector2D(-400, 500), Vector2D(500, 100), 20);
-    AddObstacle(Vector2D(350, 340), Vector2D(400, 100), 20);
-    AddObstacle(Vector2D(-600, 290), Vector2D(600, 100), 20);
-    AddObstacle(Vector2D(420, -450), Vector2D(300, 100), 20);
-    AddObstacle(Vector2D(100, 0), Vector2D(100, 500), 20);
-    AddObstacle(Vector2D(350, 120), Vector2D(400, 100), 20);
-    AddObstacle(Vector2D(-350, -120), Vector2D(500, 100), 20);
-    AddObstacle(Vector2D(-700, -480), Vector2D(300, 100), 20);
+    std::string fileName = "resources\\level1.xml";
 
+    std::shared_ptr<LevelSharedData> lvlSharedData = std::make_shared<LevelSharedData>();
+    XmlParseMaster masterParser(lvlSharedData);
+    LevelXmlParseHelper levelHelper;
 
-    std::function<void(Vector2D, Vector2D, float)> drawFunc = std::bind(&Game::DrawPlayer, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-    mPlayer = std::make_shared<Player>(Vector2D(-20, 20), 0.f, Vector2D(10, 10), &drawFunc);
-    mRenderables.push_front(mPlayer);
-    mUpdatables.push_back(mPlayer);
+    masterParser.AddHelper(levelHelper);
+    masterParser.ParseFromFile(fileName);
 
-    drawFunc = std::bind(&Game::DrawEnemy, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+    for (size_t i = 0; i < lvlSharedData->GetObstacleCount(); i++)
+    {
+        AddObstacle(lvlSharedData->GetObstaclePosition(i), lvlSharedData->GetObstacleDimensions(i), lvlSharedData->GetObstacleRotation(i), lvlSharedData->GetObstacleVisibility(i));
+    }
+
+    AddPlayer(lvlSharedData->GetPlayerPosition(), lvlSharedData->GetPlayerDimensions(), lvlSharedData->GetPlayerRotation(), lvlSharedData->GetPlayerVisibility());
+
+    std::function<void(Vector2D, Vector2D, float)> drawFunc = std::bind(&Game::DrawEnemy, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
     mEnemy = std::make_shared<Enemy>(Vector2D(-390, 140), 0.f, Vector2D(10, 10), &drawFunc);
     mRenderables.emplace_front(mEnemy);
     mUpdatables.push_back(mEnemy);
-}
-Game::~Game()
-{
 }
 
 void Game::DrawObstacle(Vector2D position, Vector2D dimension, float rotation)
@@ -92,10 +92,10 @@ void Game::DrawEnemy(Vector2D position, Vector2D dimension, float rotation)
 
 }
 
-void Game::AddObstacle(Vector2D position, Vector2D dimension, float rotation)
+void Game::AddObstacle(Vector2D position, Vector2D location, float rotation, bool isVisible)
 {
     std::function<void(Vector2D, Vector2D, float)> drawFunc = std::bind(&Game::DrawObstacle, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-    std::shared_ptr<PathObstacle> obstacle = std::make_shared<PathObstacle>(position, rotation, dimension, &drawFunc);
+    std::shared_ptr<PathObstacle> obstacle = std::make_shared<PathObstacle>(position, rotation, location, isVisible, &drawFunc);
     mRenderables.push_front(obstacle);
     mPathfinder.AddObstacle(obstacle->Position(), obstacle->Dimensions(), rotation * Helper::MathHelper::Deg2Rad);
 }
@@ -161,8 +161,9 @@ void Game::Update(float dT)
     mVisibility.ClearOccluders();
 }
 
-void Game::Draw() const
+void Game::Draw()
 {
+
     for (size_t i = 1; i < mVisibilityPoints.size(); i++)
     {
         //populate the 4 sides of the trapezoid clockwise
@@ -177,8 +178,7 @@ void Game::Draw() const
         shadowShape.setPoint(1, WorldToScreenPoint(p2));
         shadowShape.setPoint(2, WorldToScreenPoint(origin));
 
-        shadowShape.setFillColor(Color(136,136,136));
-
+        shadowShape.setFillColor(Color(136, 136, 136));
         mWindow->draw(shadowShape);
     }
 
@@ -213,12 +213,12 @@ void Game::Draw() const
 
 #endif
 
-//     for (const Vector2D& point : mVisibilityPoints )
-//     {
-//         Vertex v = WorldToScreenPoint(point);
-//         v.color = Color::Cyan;
-//         mWindow->draw(&v, 1, sf::Points);
-//     }
+    //     for (const Vector2D& point : mVisibilityPoints )
+    //     {
+    //         Vertex v = WorldToScreenPoint(point);
+    //         v.color = Color::Cyan;
+    //         mWindow->draw(&v, 1, sf::Points);
+    //     }
 
     DrawHUD();
 }
@@ -241,6 +241,16 @@ void Game::DrawHUD() const
     fpsText.setColor(fpsColor);
     mWindow->draw(fpsText);
 }
+
+
+void Game::AddPlayer(Vector2D position, Vector2D dimension, float rotation, bool isVisible /*= true*/)
+{
+    std::function<void(Vector2D, Vector2D, float)> drawFunc = std::bind(&Game::DrawPlayer, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+    mPlayer = std::make_shared<Player>(position, rotation, dimension, &drawFunc);
+    mRenderables.push_front(mPlayer);
+    mUpdatables.push_back(mPlayer);
+}
+
 
 #if !RELEASE
 void Game::DrawHex(const Grid::Hex& hex, const sf::Color& color, bool filled /*= false*/) const

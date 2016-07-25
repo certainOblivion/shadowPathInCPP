@@ -18,11 +18,15 @@ namespace Object
 		virtual void SetRotation(float rotation) { mRotation = rotation; }
 		virtual Vector2D Dimensions() const { return mDimensions; }
 		virtual void SetDimensions(const Vector2D& dimensions) { mDimensions = dimensions; }
+        virtual void SetVisibility(bool visibility) { mIsVisible = visibility; }
+        virtual bool IsVisible() { return mIsVisible ; }
 		virtual void Draw() const {
-			if (mDrawFunction) { mDrawFunction(mPosition, mDimensions, mRotation); }
+			if (mDrawFunction != nullptr && mIsVisible) { mDrawFunction(mPosition, mDimensions, mRotation); }
 		}
-		IRenderableObject(const Vector2D& position, float rotation, const Vector2D& dimensions, std::function<void(Vector2D, Vector2D, float)>* drawFunc) : mPosition(position),mRotation(rotation), mDimensions(dimensions), mDrawFunction(*drawFunc) {}
-
+		IRenderableObject(const Vector2D& position, float rotation, const Vector2D& dimensions, bool isVisible = true, std::function<void(Vector2D, Vector2D, float)>* drawFunc = nullptr) 
+            : mPosition(position),mRotation(rotation), mDimensions(dimensions),mIsVisible(isVisible), mDrawFunction(*drawFunc) 
+        {}
+        virtual ~IRenderableObject() = default;
 	protected:
 		IRenderableObject() = delete;
 
@@ -30,13 +34,14 @@ namespace Object
 		float mRotation;
 		Vector2D mDimensions;
 		std::function<void(Vector2D, Vector2D, float)> mDrawFunction;
-
+        bool mIsVisible;
 	};
 
 	class IUpdatableObject : virtual public IObject
 	{
 	public:
 		virtual void Update(float dT) = 0;
+        virtual ~IUpdatableObject() = default;
 	};
 }
 

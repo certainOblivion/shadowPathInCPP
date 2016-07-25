@@ -45,8 +45,8 @@ void PathSystem::Pathfinding::SmoothPath(std::list<Vector2D> &path)
 	{
 		return;
 	}
-	auto& source = path.begin();
-	auto& nodeToDelete = std::next(source, 1);
+	auto source = path.begin();
+	auto nodeToDelete = std::next(source, 1);
 
 	while (std::next(nodeToDelete, 1) != path.end())
 	{
@@ -116,7 +116,7 @@ void PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &des
 #else
  void PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path, std::list<Grid::Hex>& hexInPath, std::unordered_set<Grid::Hex>& testedHex, long& timeToFindPath)
  {
-	 const auto startTime = std::chrono::high_resolution_clock::now();;
+	 const auto& startTime = std::chrono::high_resolution_clock::now();;
 	 timeToFindPath = 0;
 #endif
 	 Hex startHex = PixelToHex(start);
@@ -148,7 +148,7 @@ void PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &des
 			 if (current.mHex == destinationHex)
 			 {
 #if !RELEASE
-				 auto finishTime = std::chrono::high_resolution_clock::now();
+				 const auto& finishTime = std::chrono::high_resolution_clock::now();
 				 timeToFindPath = static_cast<long>(std::chrono::duration_cast<std::chrono::milliseconds>(finishTime - startTime).count());
 #endif
 				 pathFound = true;

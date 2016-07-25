@@ -6,7 +6,7 @@ class Player : public Object::IRenderableObject, public Object::IUpdatableObject
 	friend struct std::hash<Player>;
 public:
 	Player(const Vector2D& position, float rotation, const Vector2D& dimensions, std::function<void(Vector2D, Vector2D, float)>* drawFunc);
-	~Player();
+	virtual ~Player();
 	void Update(float dT) override;
 private:
 	Player() = delete;

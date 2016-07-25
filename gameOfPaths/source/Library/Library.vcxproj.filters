@@ -39,6 +39,12 @@
     <ClInclude Include="VisibilityComputer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="XmlParseMaster.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IXmlParseHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Grid.cpp">
@@ -54,6 +60,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MathHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IXmlParseHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="XmlParseMaster.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -71,7 +71,7 @@ void Visibility::VisibilityComputer::GetVisibility(std::vector<Vector2D>& visibl
             Segment* currentOld = open.size() == 0 ? nullptr : open.front();
             if (p->mIsStart)
             {
-                auto& node = open.begin();
+                auto node = open.begin();
 
                 while (node != open.end() && SegmentInFrontOf(*p->mParent, **node, mOrigin))
                 {
