@@ -54,7 +54,6 @@ namespace Grid
 		static const Hex DIRECTIONS[];
 		static const Hex DIAGONALS[];
 		Hex();
-	private:
 		int q;
 		int r;
 		int s;
@@ -71,7 +70,7 @@ namespace Grid
 		FractionalHex(const FractionalHex& other);
 		static Hex HexRound(const FractionalHex& h);
 		static FractionalHex HexLerp(const FractionalHex& a, const FractionalHex& b, double t);
-		static void FractionalHex::HexLineDraw(const Hex& a, const Hex& b, std::list<Hex>& hexlist);
+		static void FractionalHex::HexLineDraw(const Hex& a, const Hex& b, std::vector<Hex>& hexlist);
 		FractionalHex& operator=(const FractionalHex& other);
 		static bool Equals(const FractionalHex& a, const FractionalHex& b);
 		bool operator==(const FractionalHex& other)const;

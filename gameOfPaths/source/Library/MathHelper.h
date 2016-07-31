@@ -19,7 +19,7 @@ namespace Helper
         //returns a point that is a "maxDistanceDelta" distance from "current" towards "target"
         static Vector2D MoveTowards(Vector2D current, Vector2D target, float maxDistanceDelta);
 
-        //populates "corners" with the corners of the rectangle of "center" midpoint and "dimensions" and rotated by "rotationInRadians"
+        //populates "corners" with the corners of the rectangle of "center" midpoint and "dimensions" and rotated by "rotationInRadians" starting top-left with zero rotation going clockwise
         static void GetRectangleCorners(const Vector2D& center, const Vector2D& dimensions, float rotationInRadians, std::vector<Vector2D>& corners);
 
         //returns a point which is "point" rotated around "rotateAround" by "angleInRadians" radians
@@ -36,6 +36,9 @@ namespace Helper
 
         // returns a vector that 
         static Vector2D PointProjection(const Vector2D& origin, const Vector2D& pointTowardsDir, float projectionLength);
+
+        //return a rotation to look at target
+        static float LookAt(const Vector2D& target, const Vector2D& currentPosition);
     };
 }
 

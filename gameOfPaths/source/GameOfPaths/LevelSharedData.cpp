@@ -50,3 +50,8 @@ bool LevelSharedData::GetObstacleVisibility(int index) const
     return mObstacleList[index].mVisible;
 }
 
+bool LevelSharedData::GetIsObstacleHollow(int index) const
+{
+    return mObstacleList[index].mIsHollow;
+}
+

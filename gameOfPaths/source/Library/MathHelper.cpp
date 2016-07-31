@@ -1,4 +1,5 @@
 #include "MathHelper.h"
+#include <iostream>
 
 using namespace Helper;
 
@@ -89,3 +90,10 @@ Vector2D Helper::MathHelper::PointProjection(const Vector2D& origin, const Vecto
     return origin + ((pointTowardsDir - origin) / (pointTowardsDir - origin).Magnitude() * projectionLength);
 }
 
+//////////////////////////////////////////////////////////////////////////
+float Helper::MathHelper::LookAt(const Vector2D& target, const Vector2D& currentPosition)
+{
+    Vector2D dir = currentPosition - target;
+    float rotation = static_cast<float>(atan2(dir.y, dir.x)) * Rad2Deg;
+    return rotation;
+}

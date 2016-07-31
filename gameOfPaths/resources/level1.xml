@@ -1,12 +1,12 @@
 <level>
-	<obstacle position = "0,0" dimensions="screen" rotation ="0" visible="false"/>
-	<obstacle position = "-400,500" dimensions="500,100" rotation ="20" visible="true" />
-    <obstacle position = "350, 340" dimensions="400, 100" rotation ="20" visible="true" />
-    <obstacle position = "-600, 290" dimensions="600, 100" rotation ="20" visible="true" />
-    <obstacle position = "420, -450" dimensions="300, 100" rotation ="20" visible="true" />
-    <obstacle position = "100, 0" dimensions="100, 500" rotation ="20" visible="true" />
-    <obstacle position = "350, 120" dimensions="400, 100" rotation ="20" visible="true" />
-    <obstacle position = "-350, -120" dimensions="500, 100" rotation ="20" visible="true" />
-    <obstacle position = "-700, -480" dimensions="300, 100" rotation ="20" visible="true" />
+	<obstacle type = "hollow" position = "0,0" dimensions="screen" rotation ="0" visible="false"/>
+	<obstacle type = "solid" position = "-400,500" dimensions="500,100" rotation ="20" visible="true" />
+    <obstacle type = "solid" position = "350, 340" dimensions="400, 100" rotation ="20" visible="true" />
+    <obstacle type = "solid" position = "-600, 290" dimensions="600, 100" rotation ="20" visible="true" />
+    <obstacle type = "solid" position = "420, -450" dimensions="300, 100" rotation ="20" visible="true" />
+    <obstacle type = "solid" position = "100, 0" dimensions="100, 500" rotation ="20" visible="true" />
+    <obstacle type = "solid" position = "350, 120" dimensions="400, 100" rotation ="20" visible="true" />
+    <obstacle type = "solid" position = "-350, -120" dimensions="500, 100" rotation ="20" visible="true" />
+    <obstacle type = "solid" position = "-700, -480" dimensions="300, 100" rotation ="20" visible="true" />
     <player position = "-20,20" dimensions="10, 10" rotation ="0" visible="true" />
 </level>

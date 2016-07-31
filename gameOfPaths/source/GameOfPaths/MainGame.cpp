@@ -10,7 +10,7 @@
 #include <functional>
 #include <stdlib.h>
 #include <crtdbg.h>
-#include "Helper.h"
+#include "GameData.h"
 #include "Game.h"
 
 #define _CRTDBG_MAP_ALLOC
@@ -28,10 +28,10 @@ int main()
     //_crtBreakAlloc = 647;
 #endif
     //set the working directory to the directory where the executable exists, so that the relative paths work
-    SetCurrentDirectory(Helper::ExecutableDirectory().c_str());
+    SetCurrentDirectory(GameData::ExecutableDirectory().c_str());
 
     // create the window	
-    sf::RenderWindow window(sf::VideoMode(static_cast<unsigned int>(Helper::ScreenDimensions.x), static_cast<unsigned int>(Helper::ScreenDimensions.y)), "Game of Paths");
+    sf::RenderWindow window(sf::VideoMode(1920, 1200), "Game of Paths");
     window.setFramerateLimit(70);
     auto getWindow = [&]()
     {
@@ -39,7 +39,7 @@ int main()
     };
 
     sf::Clock clock;
-    Game game(getWindow, static_cast<unsigned int>(Helper::ScreenDimensions.x), static_cast<unsigned int>(Helper::ScreenDimensions.y));
+    Game game(getWindow);
     // run the program as long as the window is open
     while (window.isOpen())
     {

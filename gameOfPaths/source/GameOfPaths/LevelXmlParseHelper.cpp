@@ -3,18 +3,21 @@
 #include "LevelSharedData.h"
 #include <string>
 #include <unordered_map>
-#include "Helper.h"
+#include "GameData.h"
 
 using namespace std;
 using namespace Library;
 
 const std::string LevelXmlParseHelper::VISIBILITY_STRING = "visible";
-
 const std::string LevelXmlParseHelper::ROTATION_STRING = "rotation";
-
 const std::string LevelXmlParseHelper::DIMENSION_STRING = "dimensions";
-
 const std::string LevelXmlParseHelper::POSITION_STRING = "position";
+const std::string LevelXmlParseHelper::PLAYER_STRING = "player";
+const std::string LevelXmlParseHelper::OBSTACLE_STRING = "obstacle";
+const std::string LevelXmlParseHelper::SOLID_STRING = "solid";
+const std::string LevelXmlParseHelper::OBSTACLE_TYPE_STRING = "type";
+const std::string LevelXmlParseHelper::HOLLOW_STRING = "hollow";
+
 
 LevelXmlParseHelper::LevelXmlParseHelper()
 {
@@ -40,7 +43,7 @@ std::shared_ptr<IXmlParseHelper> LevelXmlParseHelper::Clone() const
 
 bool LevelXmlParseHelper::EndElementHandler(Library::XmlParseMaster::SharedData* sharedData, const std::string& elementName)
 {
-    if ((elementName == "obstacle") || (elementName == "player"))
+    if ((elementName == OBSTACLE_STRING) || (elementName == PLAYER_STRING))
     {
         return true;
     }
@@ -57,13 +60,13 @@ void LevelXmlParseHelper::Initialize()
 bool LevelXmlParseHelper::StartElementHandler(Library::XmlParseMaster::SharedData* sharedData, const std::string& elementName, const std::unordered_map<std::string, std::string>& attributePairs)
 {
     LevelSharedData *levelSharedData = dynamic_cast<LevelSharedData *>(sharedData);
-    if ((nullptr != levelSharedData) && ((elementName == "obstacle") || (elementName == "player")))
+    if ((nullptr != levelSharedData) && ((elementName == OBSTACLE_STRING) || (elementName == PLAYER_STRING)))
     {
         auto stringToVector = ([](const string& s)
         {
             if (s == "screen")
             {
-                return Helper::ScreenDimensions;
+                return GameData::GetPtr().GetScreenDimensions();
             }
             std::string::size_type delimLoc = s.find(",");
             if (delimLoc != string::npos)
@@ -89,17 +92,17 @@ bool LevelXmlParseHelper::StartElementHandler(Library::XmlParseMaster::SharedDat
             }
         });
 
-        if (elementName == "obstacle")
+        if (elementName == OBSTACLE_STRING)
         {
             LevelSharedData::RenderableData obstacleData;
             obstacleData.mPosition = stringToVector(findAttibData(POSITION_STRING));
             obstacleData.mDimension = stringToVector(findAttibData(DIMENSION_STRING));
             obstacleData.mRotation = stof(findAttibData(ROTATION_STRING));
             obstacleData.mVisible = findAttibData(VISIBILITY_STRING) == "true" ? true : false;
-
+            obstacleData.mIsHollow = findAttibData(OBSTACLE_TYPE_STRING) ==  HOLLOW_STRING? true : false;
             levelSharedData->mObstacleList.push_back(obstacleData);
         }
-        else if(elementName == "player")
+        else if(elementName == PLAYER_STRING)
         {
             levelSharedData->mPlayerData.mPosition = stringToVector(findAttibData(POSITION_STRING));
             levelSharedData->mPlayerData.mDimension = stringToVector(findAttibData(DIMENSION_STRING));

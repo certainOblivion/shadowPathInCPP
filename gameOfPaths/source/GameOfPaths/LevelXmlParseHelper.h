@@ -25,6 +25,11 @@ private:
     static const std::string DIMENSION_STRING;
     static const std::string ROTATION_STRING;
     static const std::string VISIBILITY_STRING;
+    static const std::string OBSTACLE_TYPE_STRING;
+    static const std::string HOLLOW_STRING;
+    static const std::string SOLID_STRING;
+    static const std::string OBSTACLE_STRING;
+    static const std::string PLAYER_STRING;
 
 
 };

@@ -19,6 +19,7 @@ public:
     Vector2D GetObstacleDimensions(int index) const;
     float GetObstacleRotation(int index) const;
     bool GetObstacleVisibility(int index) const;
+    bool GetIsObstacleHollow(int index) const;
 private:
     struct RenderableData
     {
@@ -26,6 +27,7 @@ private:
         Vector2D mDimension;
         float mRotation;
         bool mVisible;
+        bool mIsHollow;
     };
     std::vector<RenderableData> mObstacleList;
     RenderableData mPlayerData;
