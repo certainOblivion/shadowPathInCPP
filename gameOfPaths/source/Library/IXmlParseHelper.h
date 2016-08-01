@@ -2,7 +2,7 @@
 #include <string>
 #include "XmlParseMaster.h"
 #include <unordered_map>
-#include <..\..\..\..\..\..\Installed\VisualStudioCommunity\VC\include\memory>
+#include <memory>
 
 namespace Library
 {

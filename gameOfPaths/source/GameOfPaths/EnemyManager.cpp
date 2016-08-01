@@ -35,7 +35,7 @@ void EnemyManager::CreateEnemy()
 
     const Vector2D& spawnPoint = walkablePosition[rand() % walkablePosition.size()];
 
-    std::shared_ptr<Enemy> enemy = std::make_shared<Enemy>(spawnPoint, 0.f, Vector2D(10, 10));
+    std::shared_ptr<Enemy> enemy = std::make_shared<Enemy>(spawnPoint, 0.f, Vector2D(10, 10), GameData::GetPtr().GetPlayer()->Transform());
     mEnemies.push_back(enemy);
 }
 

@@ -83,4 +83,4 @@ void SetPosition(const Vector2D& position) { mTransform.SetPosition(position); }
 void SetRotation(float rotation) { mTransform.SetRotation (rotation); }\
 Vector2D Dimensions() const { return mTransform.Dimensions(); }\
 void SetDimensions(const Vector2D& dimensions) { mTransform.SetDimensions (dimensions); }\
-
+const Object::Transform& Transform() const {return mTransform;}

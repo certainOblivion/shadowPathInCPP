@@ -16,9 +16,6 @@ using namespace Object;
 
 Game::Game(std::function<void*()> getWindow)
     : mWindow(nullptr)
-#if !RELEASE
-    , mPath(std::make_shared<std::list<Vector2D>>())
-#endif
 {
     mWindow = reinterpret_cast<sf::RenderWindow*>(getWindow());
     Init();
@@ -32,7 +29,7 @@ void Game::Init()
     mMap = std::make_shared<Map>();
     mRenderables.push_back(mMap);
 
-    mEnemyManager = std::make_shared<EnemyManager>(2, *mMap);
+    mEnemyManager = std::make_shared<EnemyManager>(1, *mMap);
     mUpdatables.push_back(mEnemyManager);
     mRenderables.push_back(mEnemyManager);
 
@@ -46,16 +43,6 @@ void Game::Update(float dT)
     mFPSCounter = 1 / dT;
 
     shared_ptr<Player> player = GameData::GetPtr().GetPlayer();
-    //handle input
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-    {
-        Vector2f mousePos;
-        mousePos.x = static_cast<float>(sf::Mouse::getPosition(*mWindow).x);
-
-        mousePos.y = static_cast<float>(sf::Mouse::getPosition(*mWindow).y);
-        Vector2D worldPoint = GameData::ScreenToWorldPoint(mousePos);
-        player->SetPosition(worldPoint);
-    }
 
     for (std::shared_ptr<Object::IUpdatableObject>& updatable : mUpdatables)
     {
@@ -118,34 +105,15 @@ void Game::DrawHUD() const
     //TODO: draw buttons to toggle debug draw
     
     // debug draw
-     GameData& gameInfo = GameData::GetPtr();
-     for (const Vector2D& hex : mMap->GetAllWalkablePoints())
-     {
-         gameInfo.DrawHex(hex, sf::Color::White);
-     }
+// 
+//      std::unordered_set<Grid::Hex> hexSet;
+//      gameInfo.GetPathFinder()->GetBlockedHexList(hexSet);
+// 
+//      for (const Grid::Hex& hex : hexSet)
+//      {
+//          gameInfo.DrawHex(hex, sf::Color::Red);
+//      }
 
-     std::unordered_set<Grid::Hex> hexSet;
-     gameInfo.GetPathFinder()->GetBlockedHexList(hexSet);
-
-     for (const Grid::Hex& hex : hexSet)
-     {
-         gameInfo.DrawHex(hex, sf::Color::Red);
-     }
-
-     for (const Grid::Hex& hex : mTestedHex)
-     {
-         gameInfo.DrawHex(hex, sf::Color::Blue);
-     }
-
-     for (const Grid::Hex& hex : mHexInPath)
-     {
-         gameInfo.DrawHex(hex, sf::Color::Cyan);
-     }
-
-     for (const Vector2D& pos : *mPath)
-     {
-         gameInfo.DrawHex(pos, sf::Color::Green);
-     }
 
 #endif
     //draw fps text

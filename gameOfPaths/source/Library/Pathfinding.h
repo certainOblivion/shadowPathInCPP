@@ -14,12 +14,13 @@ namespace PathSystem
         void AddObstacle(const Vector2D& center, const Vector2D& dimensions, float rotation);
         void AddBlockedLine(const Vector2D&p1, const Vector2D&p2);
         void GetUnblockedPathPointsInRect(const Vector2D& rectCenter, const Vector2D& rectDimension, float rectRotation, std::vector<Vector2D>& unblockedPos);
+        void UpdatePathToNewTarget(std::list<Vector2D> &path, const Vector2D& newTarget);
         
 #if RELEASE
         void GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path);
 #else
         void GetBlockedHexList(std::unordered_set<Grid::Hex>& hexSet) const;
-        void GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path, std::list<Grid::Hex>& hexInPath, std::unordered_set<Grid::Hex>& testedHex, long& timeToFindPath);
+        void GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path, std::list<Grid::Hex>* hexInPath = nullptr, std::unordered_set<Grid::Hex>* testedHex = nullptr, long* timeToFindPath = nullptr);
         const Grid::Layout& GetLayout() const;
 #endif
         bool IsVisible(Vector2D observer, Vector2D destination) const;

@@ -60,3 +60,9 @@ gameOfPaths/build/gameOfPaths.VC.opendb
 *.idb
 gameOfPaths/source/GameOfPaths/bin/Win32/Release/resources/Now-Light.otf
 gameOfPaths/source/GameOfPaths/bin/Win32/Debug/resources/Now-Light.otf
+gameOfPaths/source/GameOfPaths/bin/Win32/Debug/resources/zombie.png
+gameOfPaths/source/GameOfPaths/bin/Win32/Release/resources/level1.xml
+gameOfPaths/source/GameOfPaths/bin/Win32/Release/resources/Hero.png
+gameOfPaths/source/GameOfPaths/bin/Win32/Release/resources/zombie.png
+gameOfPaths/source/GameOfPaths/bin/Win32/Debug/resources/Hero.png
+gameOfPaths/source/GameOfPaths/bin/Win32/Debug/resources/level1.xml

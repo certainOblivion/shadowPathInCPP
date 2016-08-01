@@ -4,6 +4,7 @@
 #endif
 #include <queue>
 #include "GridHelper.h"
+#include <unordered_set>
 
 using namespace PathSystem;
 using namespace Grid;
@@ -53,12 +54,42 @@ void PathSystem::Pathfinding::GetUnblockedPathPointsInRect(const Vector2D& rectC
     }
 }
 
+void PathSystem::Pathfinding::UpdatePathToNewTarget(std::list<Vector2D> &path, const Vector2D& newTarget)
+{
+//     const Hex newTargetHex = PixelToHex(newTarget);
+//     //find closest node in the path to the newTarget
+//     auto it = path.crbegin();
+//     for (it; it != path.crend(); ++it)
+//     {
+//         auto next = std::next(it, 1);
+//         if (next != path.crend())
+//         {
+//             if (CalculateHeuristic(newTargetHex, PixelToHex(*next)) > CalculateHeuristic(newTargetHex, PixelToHex(*it)))
+//             {
+//                 if (it != path.crbegin())
+//                 {
+//                     --it;
+//                 }
+//                 break;
+//             }
+//         }
+//     }
+// 
+//     path.erase(path.crbegin().base(), it.base());
+
+
+
+    //put the newTarget as the next node to the closest found, delete the rest
+
+    //smooth the path
+}
+
 int PathSystem::Pathfinding::CalculateHeuristic(Hex a, Hex b)
 {
     Vector2D pixelA = Layout::HexToPixel(mGridMesh.GetLayout(), a);
     Vector2D pixelB = Layout::HexToPixel(mGridMesh.GetLayout(), b);
 
-    return static_cast<int>((pixelA - pixelB).SqrMagnitude()) /*+ Hex::Distance(a, b) * 100*/;
+    return static_cast<int>((pixelA - pixelB).SqrMagnitude() * 100) /*+ Hex::Distance(a, b) * 100*/;
 }
 
 
@@ -132,17 +163,19 @@ void PathSystem::Pathfinding::GetBlockedHexList(std::unordered_set<Grid::Hex>& h
 void PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path)
 {
 #else
-void PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path, std::list<Grid::Hex>& hexInPath, std::unordered_set<Grid::Hex>& testedHex, long& timeToFindPath)
+void PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path, std::list<Grid::Hex>* hexInPath /*= nullptr*/, std::unordered_set<Grid::Hex>* testedHex /*= nullptr*/, long* timeToFindPath /*= nullptr*/)
 {
-    const auto& startTime = std::chrono::high_resolution_clock::now();;
-    timeToFindPath = 0;
+    const auto& startTime = std::chrono::high_resolution_clock::now();
 #endif
     Hex startHex = PixelToHex(start);
     Hex destinationHex = PixelToHex(destination);
 
     std::unordered_map<Hex, Hex> came_from;
 #if !RELEASE
-    testedHex.clear();
+    if (testedHex)
+    {
+        testedHex->clear();
+    }
 #endif
 
     bool pathFound = false;
@@ -161,13 +194,19 @@ void PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &des
             HexPriorityNode current = frontier.top();
             frontier.pop();
 #if !RELEASE
-            testedHex.emplace(current.mHex);
+            if (testedHex)
+            {
+                testedHex->emplace(current.mHex);
+            }
 #endif
             if (current.mHex == destinationHex)
             {
 #if !RELEASE
-                const auto& finishTime = std::chrono::high_resolution_clock::now();
-                timeToFindPath = static_cast<long>(std::chrono::duration_cast<std::chrono::milliseconds>(finishTime - startTime).count());
+                if (timeToFindPath)
+                {
+                    const auto& finishTime = std::chrono::high_resolution_clock::now();
+                    *timeToFindPath = static_cast<long>(std::chrono::duration_cast<std::chrono::milliseconds>(finishTime - startTime).count());
+                }
 #endif
                 pathFound = true;
                 break;
@@ -199,14 +238,20 @@ void PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &des
     if (pathFound && came_from.size() > 0)
     {
 #if !RELEASE
-        hexInPath.clear();
+        if (hexInPath)
+        {
+            hexInPath->clear();
+        }
 #endif
         Hex currentHex = destinationHex;
 
         while (came_from[currentHex] != startHex)
         {
 #if !RELEASE
-            hexInPath.emplace_back(currentHex);
+            if (hexInPath)
+            {
+                hexInPath->emplace_back(currentHex);
+            }
 #endif
 
             path.emplace_front(HexToPixel(currentHex));

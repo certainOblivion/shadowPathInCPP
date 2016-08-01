@@ -9,7 +9,7 @@ using namespace sf;
 using namespace Helper;
 void Enemy::Update(float dT)
 {
-    if (mPath.get() != nullptr && mPath->size() > 0)
+    if (mPath->size() > 0)
     {
         if (Position() == mPath->front())
         {
@@ -26,13 +26,26 @@ void Enemy::Update(float dT)
     }
     else
     {
-        mPath = std::make_shared<std::list<Vector2D>>();
-        GameData::GetPtr().GetPathFinder()->GetPath(Position(), GameData::GetPtr().GetPlayer()->Position(), *mPath);
+        GameData::GetPtr().GetPathFinder()->GetPath(
+            Position()
+            , mTarget->Position()
+            , *mPath
+#if !RELEASE
+            , &mHexInPath
+            , &mTestedHex
+            , &mTimeToFindPath
+#endif
+            );
+    }
+
+    if (mPath->size() > 0)
+    {
+        GameData::GetPtr().GetPathFinder()->UpdatePathToNewTarget(*mPath, mTarget->Position());
     }
 }
 
-Enemy::Enemy(const Vector2D& position, float rotation, const Vector2D& dimensions)
-    : mTransform(position, rotation, dimensions), IRenderableObject(true)
+Enemy::Enemy(const Vector2D& position, float rotation, const Vector2D& dimensions, const Object::Transform& target)
+    : mTransform(position, rotation, dimensions), IRenderableObject(true), mTarget(&target), mPath(std::make_shared<std::list<Vector2D>>())
 {
     unsigned int textureSize = 0;
     const char* textureData = AssetLoader::GetAsset("resources\\zombie.png", textureSize);
@@ -60,6 +73,20 @@ void Enemy::Draw() const
         sprite.setRotation(RotationInDegrees());
         GameData::GetPtr().GetWindow()->draw(sprite);
 #if !RELEASE
+        GameData& gameInfo = GameData::GetPtr();
+        //      for (const Grid::Hex& hex : mTestedHex)
+        //      {
+        //          gameInfo.DrawHex(hex, sf::Color::Blue);
+        //      }
+        for (const Grid::Hex& hex : mHexInPath)
+        {
+            gameInfo.DrawHex(hex, sf::Color::Cyan);
+        }
+
+        for (const Vector2D& pos : *mPath)
+        {
+            gameInfo.DrawHex(pos, sf::Color::Green);
+        }
         GameData::DrawHex(Position(), sf::Color::Blue, false);
         Vertex v;
         v.position = screenPosition;
@@ -68,4 +95,9 @@ void Enemy::Draw() const
         GameData::GetPtr().GetWindow()->draw(&v, 1, sf::Points);
 #endif
     }
+}
+
+void Enemy::SetTarget(const Object::Transform& target)
+{
+    mTarget = &target;
 }

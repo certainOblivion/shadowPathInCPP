@@ -12,12 +12,6 @@ Player::~Player()
 
 void Player::Update(float dT)
 {
-    Vector2f mousePos;
-    mousePos.x = static_cast<float>(sf::Mouse::getPosition(*GameData::GetPtr().GetWindow()).x);
-    mousePos.y = static_cast<float>(sf::Mouse::getPosition(*GameData::GetPtr().GetWindow()).y);
-    Vector2D worldPoint = GameData::ScreenToWorldPoint(mousePos);
-    SetRotation(GameData::WorldToScreenRotation(MathHelper::LookAt(worldPoint, Position())));
-
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
     {
         Vector2D forward(sin(RotationInRadians()), cos(RotationInRadians()));
@@ -29,6 +23,14 @@ void Player::Update(float dT)
         Vector2D forward(sin(RotationInRadians()), cos(RotationInRadians()));
         Vector2D newPos = Position() - forward * 400 * dT;
         SetPosition(newPos);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+    {
+        SetRotation(RotationInDegrees() - 5);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+    {
+        SetRotation(RotationInDegrees() + 5);
     }
 }
 

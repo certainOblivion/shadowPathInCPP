@@ -29,10 +29,6 @@ private:
     float mFPSCounter;
     sf::Mutex mMutex;
 #if !RELEASE
-    std::list<Grid::Hex> mHexInPath;
-    std::unordered_set<Grid::Hex> mTestedHex;
-    std::shared_ptr<std::list<Vector2D>> mPath;
-    long mTimeToFindPath;
     bool mEnablePathDebugDraw;
     bool mEnableBlockedHexDebugDraw;
 #endif
