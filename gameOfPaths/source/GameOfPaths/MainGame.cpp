@@ -31,7 +31,10 @@ int main()
     SetCurrentDirectory(GameData::ExecutableDirectory().c_str());
 
     // create the window	
-    sf::RenderWindow window(sf::VideoMode(1920, 1200), "Game of Paths");
+	sf::Vector2f viewSize(1920, 1200);
+	sf::View view(viewCenter, viewSize);
+    sf::RenderWindow window(sf::VideoMode(1280, 800), "Game of Paths");
+	window.setView(view);
     window.setFramerateLimit(70);
     auto getWindow = [&]()
     {

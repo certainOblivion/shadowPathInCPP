@@ -66,3 +66,11 @@ gameOfPaths/source/GameOfPaths/bin/Win32/Release/resources/Hero.png
 gameOfPaths/source/GameOfPaths/bin/Win32/Release/resources/zombie.png
 gameOfPaths/source/GameOfPaths/bin/Win32/Debug/resources/Hero.png
 gameOfPaths/source/GameOfPaths/bin/Win32/Debug/resources/level1.xml
+gameOfPaths/build/.vs/
+
+gameOfPaths/build/gameOfPaths.VC.db
+gameOfPaths/build/gameOfPaths.VC.VC.opendb
+gameOfPaths/source/GameOfPaths/bin/
+gameOfPaths/source/GameOfPaths/obj/
+gameOfPaths/source/Library/bin/
+gameOfPaths/source/Library/obj/

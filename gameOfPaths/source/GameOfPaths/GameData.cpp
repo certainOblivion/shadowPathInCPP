@@ -82,7 +82,7 @@ std::shared_ptr<Player> GameData::GetPlayer() const
 void GameData::Init(sf::RenderWindow * window)
 {
     mWindow = window;
-    mScreenDimensions = Vector2D(static_cast<float>(mWindow->getSize().x), static_cast<float>(mWindow->getSize().y));
+    mScreenDimensions = Vector2D(static_cast<float>(mWindow->getView().getSize().x), static_cast<float>(mWindow->getView().getSize().y));
     mPathfinder = std::make_shared<PathSystem::Pathfinding>(static_cast<int>(mScreenDimensions.x), static_cast<int>(mScreenDimensions.y), 20.f);
     mVisibility = std::make_shared<Visibility::VisibilityComputer>(Vector2D(), 5000.f);
 }
