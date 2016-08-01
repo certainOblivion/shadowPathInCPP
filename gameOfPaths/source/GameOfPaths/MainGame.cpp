@@ -31,6 +31,7 @@ int main()
     SetCurrentDirectory(GameData::ExecutableDirectory().c_str());
 
     // create the window	
+	sf::Vector2f viewCenter(960.f, 600.f);
 	sf::Vector2f viewSize(1920, 1200);
 	sf::View view(viewCenter, viewSize);
     sf::RenderWindow window(sf::VideoMode(1280, 800), "Game of Paths");
