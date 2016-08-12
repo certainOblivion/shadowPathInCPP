@@ -26,9 +26,7 @@ namespace PathSystem
         * @param position of observer
         * @param position of target
         */
-        bool IsVisible(Vector2D observer, Vector2D destination) const;
-        Grid::Hex PixelToHex(const Vector2D& pixel) const;
-        Vector2D HexToPixel(const Grid::Hex& hex) const;
+        bool RayTrace(Vector2D observer, Vector2D destination) const;
 
 #if RELEASE
         void GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path);
@@ -39,6 +37,8 @@ namespace PathSystem
 #endif
 
     private:
+        Grid::Hex PixelToHex(const Vector2D& pixel) const;
+        Vector2D HexToPixel(const Grid::Hex& hex) const;
         int CalculateHeuristic(Grid::Hex a, Grid::Hex b);
         void SmoothPath(std::list<Vector2D> &path);
         int GridWidth;

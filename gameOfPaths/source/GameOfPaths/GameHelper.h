@@ -14,14 +14,14 @@ namespace sf
 
 class PathObstacle;
 
-class GameData
+class GameHelper
 {
 public:
     static sf::Vector2f WorldToScreenPoint(const Vector2D& worldPoint);
     static Vector2D ScreenToWorldPoint(const sf::Vector2f& screenPoint);
     static float WorldToScreenRotation(float rotation);
     static std::wstring ExecutableDirectory();
-    static GameData& GetPtr();
+    static GameHelper& GetPtr();
     static sf::RenderWindow* GetWindow();
     Vector2D GetScreenDimensions() const;
     std::shared_ptr<Player> CreatePlayer(const Vector2D& spawnPosition, const Vector2D& playerDimensions, float playerRotation);
@@ -35,7 +35,7 @@ public:
     static void DrawHex(const Vector2D& hexPos, const sf::Color& color, bool filled = false) ;
 #endif
 private:
-    GameData();
+    GameHelper();
     std::shared_ptr<Player> mPlayer;
     std::shared_ptr<PathSystem::Pathfinding> mPathfinder;
     std::shared_ptr<Visibility::VisibilityComputer> mVisibility;

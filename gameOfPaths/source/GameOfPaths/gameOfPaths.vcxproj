@@ -118,7 +118,7 @@ copy $(SolutionDir)..\resources $(ProjectDir)bin\$(Platform)\$(Configuration)\re
     <ClInclude Include="AssetLoader.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyManager.h" />
-    <ClInclude Include="GameData.h" />
+    <ClInclude Include="GameHelper.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="LevelSharedData.h" />
     <ClInclude Include="LevelXmlParseHelper.h" />
@@ -134,7 +134,7 @@ copy $(SolutionDir)..\resources $(ProjectDir)bin\$(Platform)\$(Configuration)\re
     <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="MainGame.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameData.cpp" />
+    <ClCompile Include="GameHelper.cpp" />
     <ClCompile Include="LevelSharedData.cpp" />
     <ClCompile Include="LevelXmlParseHelper.cpp" />
     <ClCompile Include="Map.cpp" />

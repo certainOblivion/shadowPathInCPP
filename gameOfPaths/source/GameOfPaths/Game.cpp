@@ -4,7 +4,7 @@
 #include "SFML\Graphics.hpp"
 #include "assetloader.h"
 #include <iostream>
-#include "GameData.h"
+#include "GameHelper.h"
 #include "SFML\Graphics.hpp"
 #include "Library\IObject.h"
 
@@ -23,7 +23,7 @@ Game::Game(std::function<void*()> getWindow)
 
 void Game::Init()
 {
-    GameData& gameInfo = GameData::GetPtr();
+    GameHelper& gameInfo = GameHelper::GetPtr();
     gameInfo.Init(mWindow);
 
     mMap = std::make_shared<Map>();
@@ -42,7 +42,7 @@ void Game::Update(float dT)
     //fps string will change every frame
     mFPSCounter = 1 / dT;
 
-    shared_ptr<Player> player = GameData::GetPtr().GetPlayer();
+    shared_ptr<Player> player = GameHelper::GetPtr().GetPlayer();
 
     for (std::shared_ptr<Object::IUpdatableObject>& updatable : mUpdatables)
     {
@@ -50,7 +50,7 @@ void Game::Update(float dT)
     }
 
     //calculate shadows
-    shared_ptr<Visibility::VisibilityComputer> visibility = GameData::GetPtr().GetVisibility();
+    shared_ptr<Visibility::VisibilityComputer> visibility = GameHelper::GetPtr().GetVisibility();
 
     visibility->SetOrigin(player->Position());
 
@@ -77,13 +77,13 @@ void Game::Draw()
         const Vector2D& p1 = mVisibilityPoints[i - 1];
         const Vector2D& p2 = mVisibilityPoints[i];
 
-        const Vector2D& origin = GameData::GetPtr().GetVisibility()->Origin();
+        const Vector2D& origin = GameHelper::GetPtr().GetVisibility()->Origin();
 
         sf::ConvexShape shadowShape;
         shadowShape.setPointCount(3);
-        shadowShape.setPoint(0, GameData::WorldToScreenPoint(p1));
-        shadowShape.setPoint(1, GameData::WorldToScreenPoint(p2));
-        shadowShape.setPoint(2, GameData::WorldToScreenPoint(origin));
+        shadowShape.setPoint(0, GameHelper::WorldToScreenPoint(p1));
+        shadowShape.setPoint(1, GameHelper::WorldToScreenPoint(p2));
+        shadowShape.setPoint(2, GameHelper::WorldToScreenPoint(origin));
 
         shadowShape.setFillColor(Color(136, 136, 136));
         mWindow->draw(shadowShape);
@@ -122,7 +122,7 @@ void Game::DrawHUD() const
     unsigned int fontSize = 0;
     const char* fontData = AssetLoader::GetAsset("resources\\Now-Light.otf", fontSize);
 
-    Vector2D screenDimensions = GameData::GetPtr().GetScreenDimensions();
+    Vector2D screenDimensions = GameHelper::GetPtr().GetScreenDimensions();
     fpsFont.loadFromMemory(fontData, fontSize);
     fpsText.setPosition(static_cast<float>(screenDimensions.x) * .95f, static_cast<float>(screenDimensions.y) * .01f);
     fpsText.setFont(fpsFont);
@@ -138,7 +138,7 @@ void Game::DrawHUD() const
 
 void Game::AddPlayer(const Object::Transform& playerSpawnTransform)
 { 
-    std::shared_ptr<Player> player = GameData::GetPtr().CreatePlayer(playerSpawnTransform.Position(), playerSpawnTransform.Dimensions(), playerSpawnTransform.RotationInDegrees());
+    std::shared_ptr<Player> player = GameHelper::GetPtr().CreatePlayer(playerSpawnTransform.Position(), playerSpawnTransform.Dimensions(), playerSpawnTransform.RotationInDegrees());
     mRenderables.push_front(player);
     mUpdatables.push_back(player);
 }

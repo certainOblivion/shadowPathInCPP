@@ -1,6 +1,6 @@
 #pragma once
 #include "Library\IObject.h"
-#include "GameData.h"
+#include "GameHelper.h"
 
 class PathObstacle : public Object::IRenderableObject
 {
@@ -17,12 +17,12 @@ public:
         if (IsVisible())
         {
             sf::RectangleShape shape(sf::Vector2f(static_cast<float>(mTransform.Dimensions().x), static_cast<float>(mTransform.Dimensions().y)));
-            sf::Vector2f screenPosition = GameData::WorldToScreenPoint(mTransform.Position());
+            sf::Vector2f screenPosition = GameHelper::WorldToScreenPoint(mTransform.Position());
             shape.setPosition(screenPosition);
             shape.setRotation(-mTransform.RotationInDegrees());
             shape.setOrigin(sf::Vector2f(static_cast<float>(mTransform.Dimensions().x / 2), static_cast<float>(mTransform.Dimensions().y / 2)));
             shape.setFillColor(sf::Color(153, 0, 51));
-            GameData::GetPtr().GetWindow()->draw(shape);
+            GameHelper::GetPtr().GetWindow()->draw(shape);
         }
     }
 

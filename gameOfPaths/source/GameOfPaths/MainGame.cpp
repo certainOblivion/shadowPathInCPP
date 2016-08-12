@@ -10,7 +10,7 @@
 #include <functional>
 #include <stdlib.h>
 #include <crtdbg.h>
-#include "GameData.h"
+#include "GameHelper.h"
 #include "Game.h"
 
 #define _CRTDBG_MAP_ALLOC
@@ -28,15 +28,14 @@ int main()
     //_crtBreakAlloc = 647;
 #endif
     //set the working directory to the directory where the executable exists, so that the relative paths work
-    SetCurrentDirectory(GameData::ExecutableDirectory().c_str());
+    SetCurrentDirectory(GameHelper::ExecutableDirectory().c_str());
 
     // create the window	
 	sf::Vector2f viewCenter(960.f, 600.f);
 	sf::Vector2f viewSize(1920, 1200);
 	sf::View view(viewCenter, viewSize);
-    sf::RenderWindow window(sf::VideoMode(1280, 800), "Game of Paths");
+    sf::RenderWindow window(sf::VideoMode(1920, 1200), "Game of Paths");
 	window.setView(view);
-    window.setFramerateLimit(70);
     auto getWindow = [&]()
     {
         return &window;

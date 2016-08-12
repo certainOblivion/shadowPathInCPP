@@ -104,7 +104,7 @@ int PathSystem::Pathfinding::CalculateHeuristic(Hex a, Hex b)
     Vector2D pixelA = Layout::HexToPixel(mGridMesh.GetLayout(), a);
     Vector2D pixelB = Layout::HexToPixel(mGridMesh.GetLayout(), b);
 
-    return static_cast<int>((pixelA - pixelB).SqrMagnitude() * 100);
+    return static_cast<int>((pixelA - pixelB).SqrMagnitude());
 }
 
 
@@ -119,7 +119,7 @@ void PathSystem::Pathfinding::SmoothPath(std::list<Vector2D> &path)
 
     while (std::next(nodeToDelete, 1) != path.end())
     {
-        if (IsVisible(*source, *std::next(nodeToDelete, 1)))
+        if (RayTrace(*source, *std::next(nodeToDelete, 1)))
         {
             path.erase(nodeToDelete);//nodeToDelete is invalid now
             nodeToDelete = std::next(source, 1);
@@ -132,7 +132,7 @@ void PathSystem::Pathfinding::SmoothPath(std::list<Vector2D> &path)
     }
 }
 
-bool PathSystem::Pathfinding::IsVisible(Vector2D observer, Vector2D destination) const
+bool PathSystem::Pathfinding::RayTrace(Vector2D observer, Vector2D destination) const
 {
     std::vector<Hex> hexesInBetween;
 

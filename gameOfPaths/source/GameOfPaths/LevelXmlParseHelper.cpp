@@ -3,7 +3,7 @@
 #include "LevelSharedData.h"
 #include <string>
 #include <unordered_map>
-#include "GameData.h"
+#include "GameHelper.h"
 
 using namespace std;
 using namespace Library;
@@ -66,7 +66,7 @@ bool LevelXmlParseHelper::StartElementHandler(Library::XmlParseMaster::SharedDat
         {
             if (s == "screen")
             {
-                return GameData::GetPtr().GetScreenDimensions();
+                return GameHelper::GetPtr().GetScreenDimensions();
             }
             std::string::size_type delimLoc = s.find(",");
             if (delimLoc != string::npos)
