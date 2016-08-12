@@ -16,6 +16,7 @@ private:
     std::shared_ptr<std::list<Vector2D>> mPath;
     sf::Texture mTexture;
     const Object::Transform* mTarget;
+    Vector2D mPrevTargetLocation;
 
 #if !RELEASE
     std::list<Grid::Hex> mHexInPath;

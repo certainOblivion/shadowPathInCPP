@@ -54,34 +54,49 @@ void PathSystem::Pathfinding::GetUnblockedPathPointsInRect(const Vector2D& rectC
     }
 }
 
-void PathSystem::Pathfinding::UpdatePathToNewTarget(std::list<Vector2D> &path, const Vector2D& newTarget)
+void PathSystem::Pathfinding::UpdatePathToMovingTarget(std::list<Vector2D> &path, const Vector2D& newTarget, const Vector2D& currentPosition)
 {
-//     const Hex newTargetHex = PixelToHex(newTarget);
-//     //find closest node in the path to the newTarget
-//     auto it = path.crbegin();
-//     for (it; it != path.crend(); ++it)
-//     {
-//         auto next = std::next(it, 1);
-//         if (next != path.crend())
-//         {
-//             if (CalculateHeuristic(newTargetHex, PixelToHex(*next)) > CalculateHeuristic(newTargetHex, PixelToHex(*it)))
-//             {
-//                 if (it != path.crbegin())
-//                 {
-//                     --it;
-//                 }
-//                 break;
-//             }
-//         }
-//     }
-// 
-//     path.erase(path.crbegin().base(), it.base());
+    //make sure the newTarget is not the same as the oldTarget
+    if (*path.rbegin() == newTarget)
+    {
+        return;
+    }
+    const Hex newTargetHex = PixelToHex(newTarget);
+    //find closest node in the path to the newTarget
+    auto it = path.crbegin();
+    for (it; it != path.crend(); ++it)
+    {
+        auto next = std::next(it, 1);
+        if (next != path.crend())
+        {
+            if (CalculateHeuristic(newTargetHex, PixelToHex(*next)) > CalculateHeuristic(newTargetHex, PixelToHex(*it)))
+            {
+                if (it != path.crbegin())
+                {
+                    --it;
+                }
+                break;
+            }
+        }
+    }
 
-
+    auto pathEnd = path.crbegin().base();
+    auto deleteIt = it.base();
 
     //put the newTarget as the next node to the closest found, delete the rest
+    path.erase(deleteIt, pathEnd);
+    std::list<Vector2D> deltaPath;
 
+    Vector2D deltaPathBegin = path.size() == 0 ? currentPosition : *path.rbegin();
+
+    GetPath(deltaPathBegin, newTarget, deltaPath);
+
+    for (Vector2D& waypoint : deltaPath)
+    {
+        path.push_back(waypoint);
+    }
     //smooth the path
+    SmoothPath(path);
 }
 
 int PathSystem::Pathfinding::CalculateHeuristic(Hex a, Hex b)
@@ -89,7 +104,7 @@ int PathSystem::Pathfinding::CalculateHeuristic(Hex a, Hex b)
     Vector2D pixelA = Layout::HexToPixel(mGridMesh.GetLayout(), a);
     Vector2D pixelB = Layout::HexToPixel(mGridMesh.GetLayout(), b);
 
-    return static_cast<int>((pixelA - pixelB).SqrMagnitude() * 100) /*+ Hex::Distance(a, b) * 100*/;
+    return static_cast<int>((pixelA - pixelB).SqrMagnitude() * 100);
 }
 
 

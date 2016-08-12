@@ -12,18 +12,20 @@ Player::~Player()
 
 void Player::Update(float dT)
 {
+    Vector2D newPos = Position();
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
     {
         Vector2D forward(sin(RotationInRadians()), cos(RotationInRadians()));
-        Vector2D newPos = Position() + forward * 400 * dT;
-        SetPosition(newPos);
+        newPos = Position() + forward * 250 * dT;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
     {
         Vector2D forward(sin(RotationInRadians()), cos(RotationInRadians()));
-        Vector2D newPos = Position() - forward * 400 * dT;
-        SetPosition(newPos);
+        newPos = Position() - forward * 250 * dT;
     }
+
+    SetPosition(newPos);
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     {
         SetRotation(RotationInDegrees() - 5);

@@ -9,6 +9,8 @@ using namespace sf;
 using namespace Helper;
 void Enemy::Update(float dT)
 {
+    const bool hasTargetMoved = mTarget->Position() != mPrevTargetLocation;
+    mPrevTargetLocation = mTarget->Position();
     if (mPath->size() > 0)
     {
         if (Position() == mPath->front())
@@ -23,6 +25,11 @@ void Enemy::Update(float dT)
         Vector2D& newPosition = Helper::MathHelper::MoveTowards(Position(), mPath->front(), 200 * dT);
         SetPosition(newPosition);
         SetRotation(GameData::WorldToScreenRotation(MathHelper::LookAt(mPath->front(), Position())));
+
+        if (hasTargetMoved)
+        {
+            GameData::GetPtr().GetPathFinder()->UpdatePathToMovingTarget(*mPath, mTarget->Position(), Position());
+        }
     }
     else
     {
@@ -36,11 +43,6 @@ void Enemy::Update(float dT)
             , &mTimeToFindPath
 #endif
             );
-    }
-
-    if (mPath->size() > 0)
-    {
-        GameData::GetPtr().GetPathFinder()->UpdatePathToNewTarget(*mPath, mTarget->Position());
     }
 }
 
@@ -74,10 +76,10 @@ void Enemy::Draw() const
         GameData::GetPtr().GetWindow()->draw(sprite);
 #if !RELEASE
         GameData& gameInfo = GameData::GetPtr();
-        //      for (const Grid::Hex& hex : mTestedHex)
-        //      {
-        //          gameInfo.DrawHex(hex, sf::Color::Blue);
-        //      }
+        for (const Grid::Hex& hex : mTestedHex)
+        {
+            gameInfo.DrawHex(hex, sf::Color::Blue);
+        }
         for (const Grid::Hex& hex : mHexInPath)
         {
             gameInfo.DrawHex(hex, sf::Color::Cyan);
