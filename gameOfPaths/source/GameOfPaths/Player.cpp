@@ -40,7 +40,7 @@ Player::Player(const Vector2D& position, float rotation, const Vector2D& dimensi
 {
     unsigned int textureSize = 0;
     const char* textureData = AssetLoader::GetAsset("resources\\hero.png", textureSize);
-    Vector2D screenDimensions = GameHelper::GetPtr().GetScreenDimensions();
+    Vector2D screenDimensions = GameHelper::GetInstance().GetScreenDimensions();
     mPlayerTexture.loadFromMemory(textureData, textureSize);
     mPlayerTexture.setSmooth(true);
 }
@@ -57,14 +57,14 @@ void Player::Draw() const
         sprite.setOrigin(Vector2f(static_cast<float>(sprite.getTextureRect().width / 2), static_cast<float>(sprite.getTextureRect().height / 2)));
         
         sprite.setRotation(RotationInDegrees());
-        GameHelper::GetPtr().GetWindow()->draw(sprite);
+        GameHelper::GetInstance().GetWindow()->draw(sprite);
 #if !RELEASE
         GameHelper::DrawHex(Position(), sf::Color::Blue, false);
         Vertex v;
         v.position = screenPosition;
         v.color = Color::Cyan;
 
-        GameHelper::GetPtr().GetWindow()->draw(&v, 1, sf::Points);
+        GameHelper::GetInstance().GetWindow()->draw(&v, 1, sf::Points);
 #endif
     }
 }

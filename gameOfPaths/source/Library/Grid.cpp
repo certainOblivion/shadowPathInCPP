@@ -53,9 +53,19 @@ double Vector2D::SqrMagnitude() const
     return (x*x) + (y*y);
 }
 
+double Vector2D::SqrMagnitude(Vector2D a, Vector2D b)
+{
+    return (a - b).SqrMagnitude();
+}
+
 double Vector2D::Magnitude() const
 {
     return sqrt(SqrMagnitude());
+}
+
+double Vector2D::Magnitude(Vector2D a, Vector2D b)
+{
+    return (a - b).Magnitude();
 }
 
 Vector2D& Vector2D::operator=(const Vector2D& other)

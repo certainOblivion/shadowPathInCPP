@@ -22,7 +22,7 @@ public:
             shape.setRotation(-mTransform.RotationInDegrees());
             shape.setOrigin(sf::Vector2f(static_cast<float>(mTransform.Dimensions().x / 2), static_cast<float>(mTransform.Dimensions().y / 2)));
             shape.setFillColor(sf::Color(153, 0, 51));
-            GameHelper::GetPtr().GetWindow()->draw(shape);
+            GameHelper::GetInstance().GetWindow()->draw(shape);
         }
     }
 

@@ -54,6 +54,9 @@
     <ClInclude Include="GameHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PathFinderManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -87,6 +90,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PathFinderManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

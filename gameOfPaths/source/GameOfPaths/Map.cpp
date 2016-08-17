@@ -30,14 +30,14 @@ void Map::Init()
 
     for (size_t i = 0; i < lvlSharedData->GetObstacleCount(); i++)
     {
-        shared_ptr<PathObstacle> newObstacle = GameHelper::GetPtr().AddObstacle(lvlSharedData->GetObstaclePosition(i), lvlSharedData->GetObstacleDimensions(i), lvlSharedData->GetObstacleRotation(i), lvlSharedData->GetObstacleVisibility(i), lvlSharedData->GetIsObstacleHollow(i));
+        shared_ptr<PathObstacle> newObstacle = GameHelper::GetInstance().AddObstacle(lvlSharedData->GetObstaclePosition(i), lvlSharedData->GetObstacleDimensions(i), lvlSharedData->GetObstacleRotation(i), lvlSharedData->GetObstacleVisibility(i), lvlSharedData->GetIsObstacleHollow(i));
         mObstacles.push_back(newObstacle);
     }
     mPlayerSpawnTransform.SetPosition(lvlSharedData->GetPlayerPosition());
     mPlayerSpawnTransform.SetDimensions(lvlSharedData->GetPlayerDimensions());
     mPlayerSpawnTransform.SetRotation(lvlSharedData->GetPlayerRotation());
 
-    GameHelper::GetPtr().GetPathFinder()->GetUnblockedPathPointsInRect(Vector2D(), GameHelper::GetPtr().GetScreenDimensions(), 0.f, mWalkablePoints);
+    //GameHelper::GetInstance().GetPathFinder()->GetUnblockedPathPointsInRect(Vector2D(), GameHelper::GetInstance().GetScreenDimensions(), 0.f, mWalkablePoints);
 }
 
 const std::list<std::shared_ptr<PathObstacle>>& Map::GetObstacles() const

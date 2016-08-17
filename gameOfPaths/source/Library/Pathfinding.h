@@ -2,7 +2,7 @@
 #include <list>
 #include <memory>
 #include <unordered_map>
-#include "Rect.h"
+#include "Grid.h"
 namespace PathSystem
 {
     class Pathfinding
@@ -13,34 +13,26 @@ namespace PathSystem
         ~Pathfinding();
         void AddObstacle(const Vector2D& center, const Vector2D& dimensions, float rotation);
         void AddBlockedLine(const Vector2D&p1, const Vector2D&p2);
-        void GetUnblockedPathPointsInRect(const Vector2D& rectCenter, const Vector2D& rectDimension, float rectRotation, std::vector<Vector2D>& unblockedPos);
-
-        /** Updates the path to the target assuming that the target has moved from the original place
-        * Algorithm assumes the delta between the last position and the current position is small (locomotion not teleportation)
-        * @param path calculated to the target's original position
-        * @param target's new position
-        */
-        void UpdatePathToMovingTarget(std::list<Vector2D> &path, const Vector2D& newTarget, const Vector2D& currentPosition);
+        void GetUnblockedPathPointsInRect(const Vector2D& rectCenter, const Vector2D& rectDimension, float rectRotation, std::vector<Vector2D>& unblockedPos) const;
         
         /** Checks whether there's a line of sight between the two points
         * @param position of observer
         * @param position of target
         */
         bool RayTrace(Vector2D observer, Vector2D destination) const;
-
+        void SmoothPath(std::list<Vector2D> &path) const;
 #if RELEASE
-        void GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path);
+        bool GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path) const;
 #else
         void GetBlockedHexList(std::unordered_set<Grid::Hex>& hexSet) const;
-        void GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path, std::list<Grid::Hex>* hexInPath = nullptr, std::unordered_set<Grid::Hex>* testedHex = nullptr, long* timeToFindPath = nullptr);
+        bool GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path, std::list<Grid::Hex>* hexInPath = nullptr, std::unordered_set<Grid::Hex>* testedHex = nullptr, long* timeToFindPath = nullptr) const;
         const Grid::Layout& GetLayout() const;
 #endif
 
     private:
         Grid::Hex PixelToHex(const Vector2D& pixel) const;
         Vector2D HexToPixel(const Grid::Hex& hex) const;
-        int CalculateHeuristic(Grid::Hex a, Grid::Hex b);
-        void SmoothPath(std::list<Vector2D> &path);
+        int CalculateHeuristic(Grid::Hex a, Grid::Hex b) const;
         int GridWidth;
         int GridHeight;
         int GridSize;

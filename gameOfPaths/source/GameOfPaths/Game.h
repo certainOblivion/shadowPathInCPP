@@ -12,7 +12,7 @@ class Game : public Object::IUpdatableObject
 public:
     Game(std::function<void*()> getWindow);
     void Init();
-    virtual ~Game() = default;
+    virtual ~Game();
     void Draw();
 
     void DrawHUD() const;

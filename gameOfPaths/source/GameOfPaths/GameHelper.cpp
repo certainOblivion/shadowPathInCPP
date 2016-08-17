@@ -6,6 +6,7 @@
 #include <functional>
 #include "pathobstacle.h"
 #include "Library\MathHelper.h"
+#include "PathFinderManager.h"
 
 using namespace std;
 using namespace Grid;
@@ -24,7 +25,7 @@ sf::Vector2f GameHelper::WorldToScreenPoint(const Vector2D& worldPoint)
 {
     double x = worldPoint.x;
     double y = worldPoint.y;
-    Vector2D screenDimensions = GetPtr().GetScreenDimensions();
+    Vector2D screenDimensions = GetInstance().GetScreenDimensions();
     x += (screenDimensions.x / 2);
     y = screenDimensions.y - y - (screenDimensions.y / 2);
 
@@ -36,7 +37,7 @@ Vector2D GameHelper::ScreenToWorldPoint(const sf::Vector2f& screenPoint)
 {
     float x = screenPoint.x;
     float y = screenPoint.y;
-    Vector2D screenDimensions = GetPtr().GetScreenDimensions();
+    Vector2D screenDimensions = GetInstance().GetScreenDimensions();
     x -= (static_cast<float>(screenDimensions.x) / 2);
     y = static_cast<float>(screenDimensions.y) - y - (static_cast<float>(screenDimensions.y) / 2);
 
@@ -58,78 +59,70 @@ std::wstring GameHelper::ExecutableDirectory()
     return std::wstring(buffer);
 }
 
+//////////////////////////////////////////////////////////////////////////
 sf::RenderWindow* GameHelper::GetWindow()
 {
     return mWindow;
 }
 
+//////////////////////////////////////////////////////////////////////////
 Vector2D GameHelper::GetScreenDimensions() const
 {
     return mScreenDimensions;
 }
 
+//////////////////////////////////////////////////////////////////////////
 std::shared_ptr<Player> GameHelper::CreatePlayer(const Vector2D& spawnPosition, const Vector2D& playerDimensions, float playerRotation)
 {
     mPlayer = std::make_shared<Player>(spawnPosition, playerRotation, playerDimensions);
     return mPlayer;
 }
 
+//////////////////////////////////////////////////////////////////////////
 std::shared_ptr<Player> GameHelper::GetPlayer() const
 {
     return mPlayer;
 }
 
+//////////////////////////////////////////////////////////////////////////
 void GameHelper::Init(sf::RenderWindow * window)
 {
     mWindow = window;
     mScreenDimensions = Vector2D(static_cast<float>(mWindow->getView().getSize().x), static_cast<float>(mWindow->getView().getSize().y));
-    mPathfinder = std::make_shared<PathSystem::Pathfinding>(static_cast<int>(mScreenDimensions.x), static_cast<int>(mScreenDimensions.y), 20.f);
     mVisibility = std::make_shared<Visibility::VisibilityComputer>(Vector2D(), 5000.f);
+
+    PathFinderManager::GetInstance().Init(static_cast<int>(mScreenDimensions.x), static_cast<int>(mScreenDimensions.y), 20.f);
 }
 
-std::shared_ptr<PathSystem::Pathfinding> GameHelper::GetPathFinder()
-{
-    return mPathfinder;
-}
-
+//////////////////////////////////////////////////////////////////////////
 std::shared_ptr<Visibility::VisibilityComputer> GameHelper::GetVisibility()
 {
     return mVisibility;
 }
 
-GameHelper& GameHelper::GameHelper::GetPtr()
+//////////////////////////////////////////////////////////////////////////
+GameHelper& GameHelper::GameHelper::GetInstance()
 {
     static GameHelper mPtr;
-
     return mPtr;
 }
 
+//////////////////////////////////////////////////////////////////////////
 std::shared_ptr<PathObstacle> GameHelper::AddObstacle(Vector2D position, Vector2D dimension, float rotation, bool isVisible /*= true*/, bool isHollow /*= false*/)
 {
     std::shared_ptr<PathObstacle> obstacle = std::make_shared<PathObstacle>(position, rotation, dimension, isVisible, isHollow);
-    if (!isHollow)
-    {
-        mPathfinder->AddObstacle(obstacle->Position(), obstacle->Dimensions(), rotation * Helper::MathHelper::Deg2Rad);
-    }
-    else
-    {
-        vector<Vector2D> corners;
-        Helper::MathHelper::GetRectangleCorners(position, dimension, rotation * Helper::MathHelper::Deg2Rad, corners);
 
-        mPathfinder->AddBlockedLine(corners[0], corners[1]);
-        mPathfinder->AddBlockedLine(corners[1], corners[2]);
-        mPathfinder->AddBlockedLine(corners[2], corners[3]);
-        mPathfinder->AddBlockedLine(corners[3], corners[0]);
-    }
+    PathFinderManager::AddObstacle(position, dimension, rotation, isVisible, isHollow);
 
     return obstacle;
 }
 
+//////////////////////////////////////////////////////////////////////////
 #if !RELEASE
 void GameHelper::DrawHex(const Grid::Hex& hex, const sf::Color& color, bool filled /*= false*/) 
 {
     std::shared_ptr<std::list<Vector2D>> corners = std::make_shared<std::list<Vector2D>>();
-    Grid::Layout::PolygonCorners(GetPtr(). mPathfinder->GetLayout(), hex, corners);
+    Grid::Layout::PolygonCorners(PathFinderManager::GetLayout(), hex, corners);
 
     sf::ConvexShape hexShape;
     hexShape.setPointCount(corners->size());
@@ -153,9 +146,10 @@ void GameHelper::DrawHex(const Grid::Hex& hex, const sf::Color& color, bool fill
     mWindow->draw(hexShape);
 }
 
+//////////////////////////////////////////////////////////////////////////
 void GameHelper::DrawHex(const Vector2D& hexPos, const sf::Color& color, bool filled /*= false*/) 
 {
-    Hex& hexAtPos = FractionalHex::HexRound(Layout::PixelToHex(GetPtr().mPathfinder->GetLayout(), hexPos));
+    Hex& hexAtPos = FractionalHex::HexRound(Layout::PixelToHex(PathFinderManager::GetLayout(), hexPos));
     DrawHex(hexAtPos, color, filled);
 }
 

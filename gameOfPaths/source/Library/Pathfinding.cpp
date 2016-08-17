@@ -41,7 +41,7 @@ void PathSystem::Pathfinding::AddBlockedLine(const Vector2D&p1, const Vector2D&p
     }
 }
 
-void PathSystem::Pathfinding::GetUnblockedPathPointsInRect(const Vector2D& rectCenter, const Vector2D& rectDimension, float rectRotation, std::vector<Vector2D>& unblockedPos)
+void PathSystem::Pathfinding::GetUnblockedPathPointsInRect(const Vector2D& rectCenter, const Vector2D& rectDimension, float rectRotation, std::vector<Vector2D>& unblockedPos) const
 {
     std::vector<Hex> hexList;
     GridHelper::RectangleToHexList(rectCenter, rectDimension, rectRotation, mGridMesh, hexList);
@@ -54,52 +54,7 @@ void PathSystem::Pathfinding::GetUnblockedPathPointsInRect(const Vector2D& rectC
     }
 }
 
-void PathSystem::Pathfinding::UpdatePathToMovingTarget(std::list<Vector2D> &path, const Vector2D& newTarget, const Vector2D& currentPosition)
-{
-    //make sure the newTarget is not the same as the oldTarget
-    if (*path.rbegin() == newTarget)
-    {
-        return;
-    }
-    const Hex newTargetHex = PixelToHex(newTarget);
-    //find closest node in the path to the newTarget
-    auto it = path.crbegin();
-    for (it; it != path.crend(); ++it)
-    {
-        auto next = std::next(it, 1);
-        if (next != path.crend())
-        {
-            if (CalculateHeuristic(newTargetHex, PixelToHex(*next)) > CalculateHeuristic(newTargetHex, PixelToHex(*it)))
-            {
-                if (it != path.crbegin())
-                {
-                    --it;
-                }
-                break;
-            }
-        }
-    }
-
-    auto pathEnd = path.crbegin().base();
-    auto deleteIt = it.base();
-
-    //put the newTarget as the next node to the closest found, delete the rest
-    path.erase(deleteIt, pathEnd);
-    std::list<Vector2D> deltaPath;
-
-    Vector2D deltaPathBegin = path.size() == 0 ? currentPosition : *path.rbegin();
-
-    GetPath(deltaPathBegin, newTarget, deltaPath);
-
-    for (Vector2D& waypoint : deltaPath)
-    {
-        path.push_back(waypoint);
-    }
-    //smooth the path
-    SmoothPath(path);
-}
-
-int PathSystem::Pathfinding::CalculateHeuristic(Hex a, Hex b)
+int PathSystem::Pathfinding::CalculateHeuristic(Grid::Hex a, Grid::Hex b) const
 {
     Vector2D pixelA = Layout::HexToPixel(mGridMesh.GetLayout(), a);
     Vector2D pixelB = Layout::HexToPixel(mGridMesh.GetLayout(), b);
@@ -108,7 +63,7 @@ int PathSystem::Pathfinding::CalculateHeuristic(Hex a, Hex b)
 }
 
 
-void PathSystem::Pathfinding::SmoothPath(std::list<Vector2D> &path)
+void PathSystem::Pathfinding::SmoothPath(std::list<Vector2D> &path) const
 {
     if (path.size() < 3)
     {
@@ -175,10 +130,10 @@ void PathSystem::Pathfinding::GetBlockedHexList(std::unordered_set<Grid::Hex>& h
 #endif
 
 #if RELEASE
-void PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path)
+bool PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path) const
 {
 #else
-void PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path, std::list<Grid::Hex>* hexInPath /*= nullptr*/, std::unordered_set<Grid::Hex>* testedHex /*= nullptr*/, long* timeToFindPath /*= nullptr*/)
+bool PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path, std::list<Grid::Hex>* hexInPath /*= nullptr*/, std::unordered_set<Grid::Hex>* testedHex /*= nullptr*/, long* timeToFindPath /*= nullptr*/) const
 {
     const auto& startTime = std::chrono::high_resolution_clock::now();
 #endif
@@ -278,7 +233,7 @@ void PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &des
         path.emplace_back(destination);
         SmoothPath(path);
     }
-
+    return pathFound;
 }
 
 

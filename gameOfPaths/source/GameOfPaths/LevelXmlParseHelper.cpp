@@ -66,7 +66,7 @@ bool LevelXmlParseHelper::StartElementHandler(Library::XmlParseMaster::SharedDat
         {
             if (s == "screen")
             {
-                return GameHelper::GetPtr().GetScreenDimensions();
+                return GameHelper::GetInstance().GetScreenDimensions();
             }
             std::string::size_type delimLoc = s.find(",");
             if (delimLoc != string::npos)
