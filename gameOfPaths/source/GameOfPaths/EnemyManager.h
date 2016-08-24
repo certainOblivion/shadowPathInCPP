@@ -20,4 +20,5 @@ private:
     unsigned int mMaxEnemies;
     std::vector<std::shared_ptr<Enemy>> mEnemies;
     const Map* mMap;
+    Object::Transform* mTarget;
 };

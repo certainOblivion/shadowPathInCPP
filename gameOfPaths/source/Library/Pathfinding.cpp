@@ -41,17 +41,9 @@ void PathSystem::Pathfinding::AddBlockedLine(const Vector2D&p1, const Vector2D&p
     }
 }
 
-void PathSystem::Pathfinding::GetUnblockedPathPointsInRect(const Vector2D& rectCenter, const Vector2D& rectDimension, float rectRotation, std::vector<Vector2D>& unblockedPos) const
+bool PathSystem::Pathfinding::IsPointWalkable(const Vector2D& point) const
 {
-    std::vector<Hex> hexList;
-    GridHelper::RectangleToHexList(rectCenter, rectDimension, rectRotation, mGridMesh, hexList);
-    for (const Hex& h : hexList)
-    {
-        if (mBlockedHex.count(h) == 0)
-        {
-            unblockedPos.push_back(GridHelper::HexToPixel(h, mGridMesh.GetLayout()));
-        }
-    }
+    return mBlockedHex.count(GridHelper::PixelToHex(point, mGridMesh.GetLayout())) > 0;
 }
 
 int PathSystem::Pathfinding::CalculateHeuristic(Grid::Hex a, Grid::Hex b) const
@@ -169,7 +161,7 @@ bool PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &des
                 testedHex->emplace(current.mHex);
             }
 #endif
-            if (current.mHex == destinationHex)
+            if (current.mPayload == destinationHex)
             {
 #if !RELEASE
                 if (timeToFindPath)
@@ -183,7 +175,7 @@ bool PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &des
             }
 
             std::list<Hex> neighbours;
-            Hex::GetNeighbours(current.mHex, neighbours);
+            Hex::GetNeighbours(current.mPayload, neighbours);
             for (Hex& next : neighbours)
             {
                 if (mBlockedHex.count(next))
@@ -191,7 +183,7 @@ bool PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &des
                     continue;
                 }
 
-                int new_cost = cost_so_far[current.mHex] + UNBLOCKED_HEX_COST;
+                int new_cost = cost_so_far[current.mPayload] + UNBLOCKED_HEX_COST;
 
                 if ((cost_so_far.count(next) == 0) || (new_cost < cost_so_far[next]))
                 {
@@ -199,7 +191,7 @@ bool PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &des
                     int priority = new_cost + CalculateHeuristic(destinationHex, next);
                     HexPriorityNode nextNode(next, static_cast<float>(priority));
                     frontier.push(nextNode);
-                    came_from[next] = current.mHex;
+                    came_from[next] = current.mPayload;
                 }
             }
         }

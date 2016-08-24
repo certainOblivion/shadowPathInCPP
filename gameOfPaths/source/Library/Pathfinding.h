@@ -3,17 +3,20 @@
 #include <memory>
 #include <unordered_map>
 #include "Grid.h"
+#include "PriorityNode.h"
 namespace PathSystem
 {
     class Pathfinding
     {
+        typedef std::PriorityNode<Grid::Hex> HexPriorityNode;
     public:
         Pathfinding(int mapWidth, int mapHeight, float hexSize);
         Pathfinding() = delete;
         ~Pathfinding();
         void AddObstacle(const Vector2D& center, const Vector2D& dimensions, float rotation);
         void AddBlockedLine(const Vector2D&p1, const Vector2D&p2);
-        void GetUnblockedPathPointsInRect(const Vector2D& rectCenter, const Vector2D& rectDimension, float rectRotation, std::vector<Vector2D>& unblockedPos) const;
+
+        bool IsPointWalkable(const Vector2D& point) const;
         
         /** Checks whether there's a line of sight between the two points
         * @param position of observer
@@ -41,34 +44,6 @@ namespace PathSystem
 
         Grid::GridMesh mGridMesh;
         std::unordered_set<Grid::Hex> mBlockedHex;
-    };
-
-    struct HexPriorityNode
-    {
-        Grid::Hex mHex;
-        float mPriority;
-
-        HexPriorityNode(const Grid::Hex& hex, float priority) : mHex(hex), mPriority(priority) {}
-        HexPriorityNode& operator=(const HexPriorityNode& other)
-        {
-            mHex = other.mHex;
-            mPriority = other.mPriority;
-
-            return *this;
-        }
-    };
-}
-
-namespace std
-{
-    template<>
-    struct less<PathSystem::HexPriorityNode>
-    {
-    public:
-        bool operator()(const PathSystem::HexPriorityNode& lhs, const PathSystem::HexPriorityNode& rhs) const
-        {
-            return lhs.mPriority > rhs.mPriority;
-        }
     };
 }
 
