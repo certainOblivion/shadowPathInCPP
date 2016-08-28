@@ -35,8 +35,7 @@ const char* AssetLoader::GetAsset(const char* assetPath, unsigned int& assetSize
         // TODO add variadic parameters
         throw_assert(!file.bad(), "could not open file!");
 
-        file.seekg(0, std::ios::end);
-        size_t size = static_cast<size_t>(file.tellg());
+        size_t size = buffer.st_size;
 
         if (size > 0)
         {
