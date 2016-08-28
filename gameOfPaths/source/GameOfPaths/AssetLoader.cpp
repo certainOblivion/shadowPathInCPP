@@ -26,7 +26,8 @@ const char* AssetLoader::GetAsset(const char* assetPath, unsigned int& assetSize
     else
     {
         struct stat buffer;
-        throw_assert(stat(assetPath, &buffer) == 0, "file does not exist");
+        int fileStat = stat(assetPath, &buffer);
+        throw_assert(fileStat == 0, "file does not exist");
 
         data = make_shared<vector<char>>();
         std::ifstream file(assetPath, std::ios::binary | ios::ate);
