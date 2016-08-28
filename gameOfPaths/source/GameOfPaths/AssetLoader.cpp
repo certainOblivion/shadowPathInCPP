@@ -25,7 +25,7 @@ const char* AssetLoader::GetAsset(const char* assetPath, unsigned int& assetSize
     else
     {
         data = make_shared<vector<char>>();
-        std::ifstream file(assetPath, std::ios::binary);
+        std::ifstream file(assetPath, std::ios::binary | ios::ate);
         if (file.bad())
         {
             throw std::exception("Could not open file");
