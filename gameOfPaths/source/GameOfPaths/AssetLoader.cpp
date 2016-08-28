@@ -24,12 +24,14 @@ const char* AssetLoader::GetAsset(const char* assetPath, unsigned int& assetSize
     }
     else
     {
+        struct stat buffer;
+        throw_assert(stat(assetPath, &buffer) == 0, "file does not exist");
+
         data = make_shared<vector<char>>();
         std::ifstream file(assetPath, std::ios::binary | ios::ate);
-        if (file.bad())
-        {
-            throw std::exception("Could not open file");
-        }
+
+        // TODO add variadic parameters
+        throw_assert(!file.bad(), "could not open file!");
 
         file.seekg(0, std::ios::end);
         size_t size = static_cast<size_t>(file.tellg());
