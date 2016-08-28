@@ -6,6 +6,7 @@
 #include <memory>
 #include <functional>
 #include "Library\AssertCheck.h"
+#include <sys/stat.h>
 
 using namespace std;
 
