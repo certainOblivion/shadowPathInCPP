@@ -5,6 +5,7 @@
 #include <queue>
 #include "GridHelper.h"
 #include <unordered_set>
+#include "AssertCheck.h"
 
 using namespace PathSystem;
 using namespace Grid;
@@ -18,6 +19,13 @@ Pathfinding::~Pathfinding()
 PathSystem::Pathfinding::Pathfinding(int mapWidth, int mapHeight, float hexSize)
     : GridWidth(mapWidth), GridHeight(mapHeight), mGridMesh(GridMesh(mapWidth, mapHeight, hexSize))
 {
+    std::vector<Hex> hexList;
+    GridHelper::RectangleToHexList(Vector2D(0,0), Vector2D(mapWidth, mapHeight), 0.f, mGridMesh, hexList);
+
+    for (const Hex& h : hexList)
+    {
+         mMap[h] = DEFAULT_HEX_COST;
+    }
 }
 
 void PathSystem::Pathfinding::AddObstacle(const Vector2D& center, const Vector2D& dimensions, float rotation)
@@ -26,7 +34,10 @@ void PathSystem::Pathfinding::AddObstacle(const Vector2D& center, const Vector2D
     GridHelper::RectangleToHexList(center, dimensions, rotation, mGridMesh, hexList);
     for (const Hex& h : hexList)
     {
+        mMap[h] = BLOCKED_HEX_COST;
+#if !RELEASE
         mBlockedHex.insert(h);
+#endif
     }
 }
 
@@ -37,13 +48,16 @@ void PathSystem::Pathfinding::AddBlockedLine(const Vector2D&p1, const Vector2D&p
 
     for (const Hex& h : blockedHex)
     {
+        mMap[h] = BLOCKED_HEX_COST;
+#if !RELEASE
         mBlockedHex.insert(h);
+#endif
     }
 }
 
 bool PathSystem::Pathfinding::IsPointWalkable(const Vector2D& point) const
 {
-    return mBlockedHex.count(GridHelper::PixelToHex(point, mGridMesh.GetLayout())) > 0;
+    return !IsHexBlocked(GridHelper::PixelToHex(point, mGridMesh.GetLayout()));
 }
 
 int PathSystem::Pathfinding::CalculateHeuristic(Grid::Hex a, Grid::Hex b) const
@@ -54,6 +68,18 @@ int PathSystem::Pathfinding::CalculateHeuristic(Grid::Hex a, Grid::Hex b) const
     return static_cast<int>((pixelA - pixelB).SqrMagnitude());
 }
 
+
+int PathSystem::Pathfinding::GetHexCost(Grid::Hex h) const
+{
+    auto it = mMap.find(h);
+    throw_assert(it != mMap.end(), "map does not contain this hex");
+    return it->second;
+}
+
+bool PathSystem::Pathfinding::IsHexBlocked(Grid::Hex hex) const
+{
+    return GetHexCost(hex) == BLOCKED_HEX_COST;
+}
 
 void PathSystem::Pathfinding::SmoothPath(std::list<Vector2D> &path) const
 {
@@ -87,7 +113,7 @@ bool PathSystem::Pathfinding::RayTrace(Vector2D observer, Vector2D destination) 
 
     for (Hex& hex : hexesInBetween)
     {
-        if (mBlockedHex.count(hex))
+        if (IsHexBlocked(hex))
         {
             return false;
         }
@@ -141,7 +167,7 @@ bool PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &des
 #endif
 
     bool pathFound = false;
-    if (!mBlockedHex.count(destinationHex) && !mBlockedHex.count(startHex))
+    if (!IsHexBlocked(destinationHex) && !IsHexBlocked(startHex))
     {
         std::priority_queue<HexPriorityNode, std::vector<HexPriorityNode>> frontier;
         HexPriorityNode startNode(startHex, 0.f);
@@ -158,7 +184,7 @@ bool PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &des
 #if !RELEASE
             if (testedHex)
             {
-                testedHex->emplace(current.mHex);
+                testedHex->emplace(current.mPayload);
             }
 #endif
             if (current.mPayload == destinationHex)
@@ -178,12 +204,12 @@ bool PathSystem::Pathfinding::GetPath(const Vector2D& start, const Vector2D &des
             Hex::GetNeighbours(current.mPayload, neighbours);
             for (Hex& next : neighbours)
             {
-                if (mBlockedHex.count(next))
+                if (IsHexBlocked(next))
                 {
                     continue;
                 }
 
-                int new_cost = cost_so_far[current.mPayload] + UNBLOCKED_HEX_COST;
+                int new_cost = cost_so_far[current.mPayload] + GetHexCost(current.mPayload);
 
                 if ((cost_so_far.count(next) == 0) || (new_cost < cost_so_far[next]))
                 {

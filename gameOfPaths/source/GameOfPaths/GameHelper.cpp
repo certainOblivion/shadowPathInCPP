@@ -7,6 +7,7 @@
 #include "pathobstacle.h"
 #include "Library\MathHelper.h"
 #include "PathFinderManager.h"
+#include "AssetLoader.h"
 
 using namespace std;
 using namespace Grid;
@@ -122,7 +123,7 @@ std::shared_ptr<PathObstacle> GameHelper::AddObstacle(Vector2D position, Vector2
 void GameHelper::DrawHex(const Grid::Hex& hex, const sf::Color& color, bool filled /*= false*/) 
 {
     std::shared_ptr<std::list<Vector2D>> corners = std::make_shared<std::list<Vector2D>>();
-    Grid::Layout::PolygonCorners(PathFinderManager::GetLayout(), hex, corners);
+    Grid::Layout::PolygonCorners(PathFinderManager::GetHexGridLayout(), hex, corners);
 
     sf::ConvexShape hexShape;
     hexShape.setPointCount(corners->size());
@@ -144,12 +145,28 @@ void GameHelper::DrawHex(const Grid::Hex& hex, const sf::Color& color, bool fill
     }
 
     mWindow->draw(hexShape);
+
+//     Text hexText;
+//     Font hexFont;
+//     unsigned int fontSize = 0;
+//     const char* fontData = AssetLoader::GetAsset("resources\\Now-Light.otf", fontSize);
+// 
+//     Vector2D hexPosition = Layout::HexToPixel(PathFinderManager::GetHexGridLayout(), hex);
+//     hexFont.loadFromMemory(fontData, fontSize);
+//     hexText.setPosition(WorldToScreenPoint(hexPosition - Vector2D(15,-10)));
+//     hexText.setFont(hexFont);
+//     hexText.setCharacterSize(10);
+//     char hexString[15];
+//     sprintf_s(hexString, "%d,%d\n  %d", hex.q,hex.r,hex.s);
+//     hexText.setString(hexString);
+//     hexText.setColor(sf::Color::White);
+//     mWindow->draw(hexText);
 }
 
 //////////////////////////////////////////////////////////////////////////
 void GameHelper::DrawHex(const Vector2D& hexPos, const sf::Color& color, bool filled /*= false*/) 
 {
-    Hex& hexAtPos = FractionalHex::HexRound(Layout::PixelToHex(PathFinderManager::GetLayout(), hexPos));
+    Hex hexAtPos = FractionalHex::HexRound(Layout::PixelToHex(PathFinderManager::GetHexGridLayout(), hexPos));
     DrawHex(hexAtPos, color, filled);
 }
 

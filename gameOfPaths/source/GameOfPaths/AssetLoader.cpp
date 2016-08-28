@@ -5,6 +5,7 @@
 #include <streambuf>
 #include <memory>
 #include <functional>
+#include "Library\AssertCheck.h"
 
 using namespace std;
 
@@ -12,9 +13,10 @@ std::unordered_map < std::string, std::shared_ptr<std::vector<char>>> AssetLoade
 
 const char* AssetLoader::GetAsset(const char* assetPath, unsigned int& assetSize)
 {
+    throw_assert(assetPath != nullptr, "assetPath is null");
     string path(assetPath);
     shared_ptr<vector<char>> data;
-    auto& iterator = mAssetMap.find(path);
+    auto iterator = mAssetMap.find(path);
     if (iterator != mAssetMap.end())
     {
         data = iterator->second;
@@ -42,8 +44,6 @@ const char* AssetLoader::GetAsset(const char* assetPath, unsigned int& assetSize
         file.close();
 
         assetSize = size;
-
-        string path(assetPath);
         mAssetMap[path] = data;
     }
     return &((*data)[0]);

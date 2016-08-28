@@ -33,6 +33,10 @@ void Game::Init()
     mMap = std::make_shared<Map>();
     mRenderables.push_back(mMap);
 
+#if !RELEASE
+    PathFinderManager::GetBlockedHexArray(mBlockedHex);
+#endif
+
     mEnemyManager = std::make_shared<EnemyManager>(10, *mMap);
     mUpdatables.push_back(mEnemyManager);
     mRenderables.push_back(mEnemyManager);
@@ -119,14 +123,15 @@ void Game::DrawHUD() const
     fpsText.setString(fpsString);
 
     Color fpsColor = mFPSCounter > 40 ? Color::Green : (mFPSCounter > 20 ? Color::Yellow : Color::Red);
-    fpsText.setColor(fpsColor);
+    fpsText.setFillColor(fpsColor);
     mWindow->draw(fpsText);
 
-    Vertex v;
-    v.position = GameHelper::WorldToScreenPoint(Vector2D());
-    v.color = Color::Cyan;
-    mWindow->draw(&v, 1, sf::Points);
-
+#if !RELEASE
+    for (const Grid::Hex& h : mBlockedHex)
+    {
+        GameHelper::DrawHex(h, sf::Color::Red);
+    }
+#endif
 }
 
 

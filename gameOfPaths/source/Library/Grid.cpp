@@ -449,18 +449,6 @@ GridMesh::GridMesh(double mapWidth, double mapHeight, float hexSize/*= 1.f*/) :
 {
 }
 
-void GridMesh::CreateMap(double mapWidth, double mapHeight, std::unordered_set<Hex>& map)
-{
-    for (int r = 0; r < mapHeight; r++)
-    {
-        int r_offset = r >> 1;
-        for (int q = -r_offset; q < mapWidth - r_offset; q++)
-        {
-            map.emplace(Hex(q, r, -q - r));
-        }
-    }
-}
-
 bool GridMesh::Equals(const GridMesh& a, const GridMesh& b)
 {
     return a == b;

@@ -36,14 +36,20 @@ namespace PathSystem
         Grid::Hex PixelToHex(const Vector2D& pixel) const;
         Vector2D HexToPixel(const Grid::Hex& hex) const;
         int CalculateHeuristic(Grid::Hex a, Grid::Hex b) const;
+        int GetHexCost(Grid::Hex h) const;
+        bool IsHexBlocked(Grid::Hex hex) const;
         int GridWidth;
         int GridHeight;
         int GridSize;
 
-        const int UNBLOCKED_HEX_COST = 1;
+        const int32_t DEFAULT_HEX_COST = 1;
+        const int32_t BLOCKED_HEX_COST = 1 << 31;
 
         Grid::GridMesh mGridMesh;
+#if !RELEASE
         std::unordered_set<Grid::Hex> mBlockedHex;
+#endif
+        std::unordered_map<Grid::Hex, int> mMap;
     };
 }
 

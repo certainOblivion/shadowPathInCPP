@@ -31,13 +31,13 @@ namespace Grid
 {
 
 #pragma region Hex
-    class Hex
+    struct Hex
     {
         friend struct std::hash<Hex>;
         friend class FractionalHex;
         friend class OffsetCoord;
         friend class Layout;
-    public:
+
         Hex(int _q, int _r, int _s);
         Hex(const Hex& other);
         static Hex Add(const Hex& a, const Hex& b);
@@ -186,7 +186,6 @@ namespace Grid
         GridMesh(double mapWidth, double mapHeight, float hexSize = 1.f);
         GridMesh(const GridMesh& other);
 
-        static void CreateMap(double mapWidth, double mapHeight, std::unordered_set<Hex>& createdHex);
         static bool Equals(const GridMesh& a, const GridMesh& b);
         bool operator==(const GridMesh& other)const;
         bool operator!=(const GridMesh& other)const { return !(operator==(other)); }
@@ -213,9 +212,10 @@ namespace std
             using std::size_t;
             using std::hash;
 
-            return (hash<int>()(h.q)
-                ^ (hash<int>()(h.r) << 1))
-                ^ (hash<int>()(h.s) << 2);
+            hash<int> int_hash;
+            size_t hq = int_hash(h.q);
+            size_t hr = int_hash(h.r);
+            return hq ^ (hr + 0x9e3779b9 + (hq << 6) + (hq >> 2));
         }
     };
 
@@ -227,9 +227,10 @@ namespace std
         {
             using std::size_t;
             using std::hash;
-
-            return ((hash<double>()(p.x)
-                ^ (hash<double>()(p.y) << 1)));
+            hash<double> double_hash;
+            size_t px = double_hash(p.x);
+            size_t py = double_hash(p.y);
+            return px ^ (py + 0x9e3779b9 + (px << 6) + (px >> 2));
         }
     };
 }

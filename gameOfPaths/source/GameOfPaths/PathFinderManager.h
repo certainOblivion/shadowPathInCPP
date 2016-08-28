@@ -51,7 +51,8 @@ public:
     static void Stop();
 
 #if !RELEASE
-    static Grid::Layout GetLayout();
+    static Grid::Layout GetHexGridLayout();
+    static void GetBlockedHexArray(std::unordered_set<Grid::Hex>& hexArray);
 #endif
 private:
     PathFinderManager();

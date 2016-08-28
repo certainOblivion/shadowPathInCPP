@@ -7,6 +7,7 @@
 #include "SFML\System.hpp"
 #include "Map.h"
 #include "EnemyManager.h"
+#include "Library\Grid.h"
 class Game : public Object::IUpdatableObject
 {
 public:
@@ -29,8 +30,7 @@ private:
     float mFPSCounter;
     sf::Mutex mMutex;
 #if !RELEASE
-    bool mEnablePathDebugDraw;
-    bool mEnableBlockedHexDebugDraw;
+    std::unordered_set<Grid::Hex> mBlockedHex;
 #endif
 };
 

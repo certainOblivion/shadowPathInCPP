@@ -31,7 +31,7 @@ void EnemyManager::Update(float dT)
 
 void EnemyManager::CreateEnemy()
 {
-    const std::vector<Vector2D>& walkablePosition = mMap->GetAllWalkablePoints();
+    //const std::vector<Vector2D>& walkablePosition = mMap->GetAllWalkablePoints();
 
 //    throw_assert(walkablePosition.size() > 0 , "there are no spawn points");
     const Vector2D& spawnPoint = Vector2D(800,8);//walkablePosition[rand() % walkablePosition.size()];

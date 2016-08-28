@@ -31,7 +31,7 @@ void Enemy::Update(float dT)
             }
         }
 
-        Vector2D& newPosition = Helper::MathHelper::MoveTowards(Position(), mPath->front(), 200 * dT);
+        Vector2D newPosition = Helper::MathHelper::MoveTowards(Position(), mPath->front(), 200 * dT);
         SetPosition(newPosition);
         SetRotation(GameHelper::WorldToScreenRotation(MathHelper::LookAt(mPath->front(), Position())));
 

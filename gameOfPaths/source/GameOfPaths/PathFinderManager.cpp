@@ -80,10 +80,12 @@ void PathFinderManager::AddObstacle(Vector2D position, Vector2D dimension, float
         std::vector<Vector2D> corners;
         Helper::MathHelper::GetRectangleCorners(position, dimension, rotation * Helper::MathHelper::Deg2Rad, corners);
 
-        GetInstance().mPathfinder->AddBlockedLine(corners[0], corners[1]);
-        GetInstance().mPathfinder->AddBlockedLine(corners[1], corners[2]);
-        GetInstance().mPathfinder->AddBlockedLine(corners[2], corners[3]);
-        GetInstance().mPathfinder->AddBlockedLine(corners[3], corners[0]);
+        for (size_t i = 0; i < corners.size() - 1; ++i)
+        {
+            GetInstance().mPathfinder->AddBlockedLine(corners[i], corners[i + 1]);
+        }
+        //close off shape
+        GetInstance().mPathfinder->AddBlockedLine(corners[corners.size() - 1], corners[0]);
     }
 }
 
@@ -103,11 +105,19 @@ void PathFinderManager::Stop()
 }
 
 #if !RELEASE
-Grid::Layout PathFinderManager::GetLayout()
+Grid::Layout PathFinderManager::GetHexGridLayout()
 {
     std::lock_guard<std::recursive_mutex> lockGuard(GetInstance().mMutex);
     return GetInstance().mPathfinder->GetLayout();
 }
+
+void PathFinderManager::GetBlockedHexArray(std::unordered_set<Grid::Hex>& hexArray)
+{
+    std::lock_guard<std::recursive_mutex> lockGuard(GetInstance().mMutex);
+    
+    GetInstance().mPathfinder->GetBlockedHexList(hexArray);
+}
+
 #endif
 
 
