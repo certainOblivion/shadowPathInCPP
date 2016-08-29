@@ -27,13 +27,12 @@ const char* AssetLoader::GetAsset(const char* assetPath, unsigned int& assetSize
     {
         struct stat buffer;
         int fileStat = stat(assetPath, &buffer);
-        throw_assert(fileStat == 0, "file does not exist");
+        throw_assert(fileStat == 0, "%s file does not exist", assetPath);
 
         data = make_shared<vector<char>>();
         std::ifstream file(assetPath, std::ios::binary | ios::ate);
 
-        // TODO add variadic parameters
-        throw_assert(!file.bad(), "could not open file!");
+        throw_assert(!file.bad(), "Read/writing error on file read operation. File: %s" , assetPath);
 
         size_t size = buffer.st_size;
 

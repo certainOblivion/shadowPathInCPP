@@ -72,7 +72,7 @@ int PathSystem::Pathfinding::CalculateHeuristic(Grid::Hex a, Grid::Hex b) const
 int PathSystem::Pathfinding::GetHexCost(Grid::Hex h) const
 {
     auto it = mMap.find(h);
-    throw_assert(it != mMap.end(), "map does not contain this hex");
+    throw_assert(it != mMap.end(), "map does not contain the hex %d, %d, %d", h.q , h.r , h.s );
     return it->second;
 }
 
