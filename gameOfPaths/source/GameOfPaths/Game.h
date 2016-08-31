@@ -20,6 +20,8 @@ public:
     void AddPlayer(const Object::Transform& playerSpawnTransform);
     void Update(float dT) override;
 private:
+    void HandleInput();
+    void CalculateVisibility();
     sf::RenderWindow* mWindow;
     std::shared_ptr<Map> mMap;
     std::shared_ptr<EnemyManager> mEnemyManager;
@@ -29,8 +31,10 @@ private:
     std::vector<Vector2D> mVisibilityPoints;
     float mFPSCounter;
     sf::Mutex mMutex;
+    std::unordered_set<sf::Keyboard::Key> mKeysPressed;
 #if !RELEASE
     std::unordered_set<Grid::Hex> mBlockedHex;
+    bool mEnableDrawBlockedHex;
 #endif
 };
 

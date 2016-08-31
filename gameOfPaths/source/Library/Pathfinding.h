@@ -22,7 +22,7 @@ namespace PathSystem
         * @param position of observer
         * @param position of target
         */
-        bool RayTrace(Vector2D observer, Vector2D destination) const;
+        bool IsVisible(Vector2D observer, Vector2D destination) const;
         void SmoothPath(std::list<Vector2D> &path) const;
 #if RELEASE
         bool GetPath(const Vector2D& start, const Vector2D &destination, std::list<Vector2D> &path) const;

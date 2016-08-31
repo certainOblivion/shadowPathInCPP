@@ -7,6 +7,8 @@
 #include "AssetLoader.h"
 #include "PathFinderManager.h"
 #include <functional>
+#include "Box2D.h"
+
 using namespace sf;
 using namespace Helper;
 void Enemy::Update(float dT)

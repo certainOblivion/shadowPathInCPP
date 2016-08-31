@@ -91,11 +91,17 @@ void PathFinderManager::AddObstacle(Vector2D position, Vector2D dimension, float
 
 void PathFinderManager::Start()
 {
-    GetInstance().mIsProcessRunning = true;
-    while (GetInstance().mIsProcessRunning)
-    {
-        GetInstance().TryProcessNext();
-    }
+    auto worker = []() 
+    {    
+        GetInstance().mIsProcessRunning = true;
+        while (GetInstance().mIsProcessRunning)
+        {
+            GetInstance().TryProcessNext();
+        }
+    };
+
+    std::thread thread_1(worker);
+    thread_1.detach();
 }
 
 void PathFinderManager::Stop()

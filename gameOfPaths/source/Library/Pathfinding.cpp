@@ -92,7 +92,7 @@ void PathSystem::Pathfinding::SmoothPath(std::list<Vector2D> &path) const
 
     while (std::next(nodeToDelete, 1) != path.end())
     {
-        if (RayTrace(*source, *std::next(nodeToDelete, 1)))
+        if (IsVisible(*source, *std::next(nodeToDelete, 1)))
         {
             path.erase(nodeToDelete);//nodeToDelete is invalid now
             nodeToDelete = std::next(source, 1);
@@ -105,7 +105,7 @@ void PathSystem::Pathfinding::SmoothPath(std::list<Vector2D> &path) const
     }
 }
 
-bool PathSystem::Pathfinding::RayTrace(Vector2D observer, Vector2D destination) const
+bool PathSystem::Pathfinding::IsVisible(Vector2D observer, Vector2D destination) const
 {
     std::vector<Hex> hexesInBetween;
 

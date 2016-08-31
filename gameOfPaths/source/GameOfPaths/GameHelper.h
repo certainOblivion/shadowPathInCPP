@@ -12,7 +12,7 @@ namespace sf
 {
     class RenderWindow;
 }
-
+class b2World;
 class PathObstacle;
 
 class GameHelper
@@ -40,6 +40,7 @@ private:
     void operator=(GameHelper const&) = delete; // Don't implement
     std::shared_ptr<Player> mPlayer;
     std::shared_ptr<Visibility::VisibilityComputer> mVisibility;
+    std::shared_ptr<b2World> mPhysicsWorld;
     Vector2D mScreenDimensions;
     std::unordered_set<Grid::Hex> mWalkableHex;
     static sf::RenderWindow* mWindow;

@@ -8,6 +8,7 @@
 #include "Library\MathHelper.h"
 #include "PathFinderManager.h"
 #include "AssetLoader.h"
+#include "Box2D.h"
 
 using namespace std;
 using namespace Grid;
@@ -93,6 +94,9 @@ void GameHelper::Init(sf::RenderWindow * window)
     mVisibility = std::make_shared<Visibility::VisibilityComputer>(Vector2D(), 5000.f);
 
     PathFinderManager::GetInstance().Init(static_cast<int>(mScreenDimensions.x), static_cast<int>(mScreenDimensions.y), 15.f);
+
+    b2Vec2 gravity(0.0f, 0.0f);
+    b2World world(gravity);
 }
 
 //////////////////////////////////////////////////////////////////////////
